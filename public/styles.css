@@ -54,19 +54,17 @@ body {
     left: 0;
     width: 250px;
     background-color: #1e1e1e;
-    /*box-shadow: 4px 0 12px rgba(0, 0, 0, 0.4);*/
     background: linear-gradient(180deg, #1e1e1e, #121212);
     position: fixed;
     height: 100vh;
-    overflow-y: auto;
+    z-index: 1000;
     font-family: Arial, sans-serif;
+    transition: transform 0.3s ease;
+}
+.side-nav.closed {
+    transform: translateX(-100%);
 }
 .side-nav a{
-    /*
-    display: block;
-    color: white;
-    padding: 16px;
-    text-decoration: none;*/
     display: flex;
     align-items: center;
     gap: 12px;
@@ -90,6 +88,41 @@ body {
     background-color: orangered;
     color: #ffffff;
 }
+.hamburger {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    font-size: 22px;
+    cursor: pointer;
+    color: #fff;
+    z-index: 1100;
+}
+.side-nav:not(.closed) ~ .hamburger {
+    display: none;
+}
+.side-top{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px;
+    color: #fff;
+}
+.side-title {
+    font-size: 18px;
+    font-weight: 600;
+}
+/* X icon */
+.close-sidebar{
+    font-size: 20px;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+.close-sidebar:hover {
+    color: #fff;
+    transform: rotate(90deg);
+}
+/*end X icon */
 .side-search{
     display: flex;
     align-items: center;
@@ -117,5 +150,18 @@ body {
 .side-search:focus-within {
     background-color: #333;
     box-shadow: 0 0 0 2px #007bff44;
+    transform: scale(1.02);
+}
+
+.side-search i:hover {
+    color: #fff;
+}
+.side-nav .logout{
+    margin-top: auto;
+    color: orangered;
+}
+.side-nav .logout:hover {
+    background-color: orangered;
+    color: #ffffff;
 }
 /*end side-nav design*/
