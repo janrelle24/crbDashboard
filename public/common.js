@@ -9,7 +9,7 @@ async function loadLayout(){
     
     await loadPartial('#header-placeholder', 'partials/header.html');
     await loadPartial('#nav-placeholder', 'partials/nav.html');
-    
+    await loadPartial('#footer-placeholder', 'partials/footer.html');
     
     initSidebar();
     highlightActiveNav();
