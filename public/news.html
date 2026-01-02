@@ -12,9 +12,50 @@
     <div id="header-placeholder"></div>
     <!--nav.html-->
     <div id="nav-placeholder"></div>
-    <main>
-        <h1>News Page</h1>
-        <p>This is the news content area.</p>
+
+    <main class="main-pages">
+        <div class="news-header">
+            <h2>Welcome to News Page</h2>
+            <button id="openModal" class="primary-btn">
+                <i class="fa-solid fa-plus"></i> Post News
+            </button>
+        </div>
+        <!--News Table-->
+        <table class="news-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Content</th>
+                    <th>Date</th>
+                    <th width="160">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="newsTableBody"></tbody>
+        </table>
+        
+        <!--Modal-->
+        <div class="modal" id="newsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Post News</h3>
+                    <i class="fa-solid fa-xmark close-modal"></i>
+                </div>
+                <form action="" id="newsForm">
+                    <input type="hidden" id="newsId">
+
+                    <label>Title</label>
+                    <input type="text" id="title" required>
+
+                    <label>Content</label>
+                    <textarea id="content" required></textarea>
+
+                    <div class="modal-actions">
+                        <button type="submit" class="primary-btn">Save</button>
+                        <button type="button" class="secondary-btn close-modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </main>
     <!--footer.html-->
     <div id="footer-placeholder"></div>
