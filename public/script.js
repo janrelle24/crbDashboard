@@ -52,20 +52,20 @@ closeModalBtns.forEach(btn => {
 /* Render table */
 function renderTable(){
     tableBody.innerHTML = "";
+
     news.forEach(item => {
         tableBody.innerHTML += `
             <tr>
                 <td>${item.title}</td>
                 <td>${item.content}</td>
-                <td>${item.date}</td>
+                <td>${new Date(item.date).toLocaleDateString()}</td>
                 <td>
-                    <button class="action-btn edit-btn" onclick="editNews(${item.id})">Edit</button>
-                    <button class="action-btn delete-btn" onclick="deleteNews(${item.id})">Delete</button>
+                    <button class="action-btn edit-btn" onclick="editNews('${item.id}')">Edit</button>
+                    <button class="action-btn delete-btn" onclick="deleteNews('${item.id}')">Delete</button>
                 </td>
             </tr>
         `;
     });
-    localStorage.setItem("news", JSON.stringify(news));
 }
 /* Save */
 form.addEventListener("submit", async e => {
