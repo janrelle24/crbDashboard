@@ -27,7 +27,15 @@ const tableBody = document.getElementById("newsTableBody");
 const form = document.getElementById("newsForm");
 const modalTitle = document.getElementById("modalTitle");
 
-let news = JSON.parse(localStorage.getItem("news")) || [];
+let news = [];
+
+async function loadNews() {
+    const res = await fetch("/api/news");
+    news = await res.json();
+    renderTable();
+}
+
+document.addEventListener("DOMContentLoaded", loadNews);
 
 /* Modal controls */
 openModalBtn.onclick = () =>{
@@ -60,26 +68,25 @@ function renderTable(){
     localStorage.setItem("news", JSON.stringify(news));
 }
 /* Save */
-form.addEventListener("submit", e => {
+form.addEventListener("submit", async e => {
     e.preventDefault();
 
     const id = document.getElementById("newsId").value;
     const title = document.getElementById("title").value;
     const content = document.getElementById("content").value;
 
-    if (id) {
-        news = news.map(n => n.id == id ? { ...n, title, content } : n);
-    } else {
-        news.push({
-            id: Date.now(),
-            title,
-            content,
-            date: new Date().toLocaleDateString()
-        });
-    }
+    const method = id ? "PUT" : "POST";
+    const url = id ? `/api/news/${id}` : "/api/news";
+
+    await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, content })
+    });
 
     modal.classList.remove("show");
-    renderTable();
+    form.reset();
+    loadNews();
 });
 /*cancel*/
 form.addEventListener("reset", () => {
@@ -103,6 +110,9 @@ function deleteNews(id) {
 
 renderTable();
 /*end script for news page modal*/
+
+
+
 
 
 
