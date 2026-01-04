@@ -36,6 +36,28 @@ app.get('/api/news', async (req, res) =>{
         res.status(500).json({ error: 'Failed to fetch news items' });
     }
 });
+//delete news
+app.delete('/api/news/:id', async (req, res) =>{
+    try{
+        await News.findByIdAndDelete(req.params.id);
+        res.json({ message: "News deleted" });
+    }catch(err){
+        res.status(500).json({ error: 'Failed to delete news item' });
+    }
+});
+//update news
+app.put('/api/news/:id', async (req, res) =>{
+    try{
+        const updated = await News.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+        res.json(updated);
+    }catch(err){
+        res.status(500).json({ error: "Update failed" });
+    }
+});
 /**end script for news**/
 //start server
 app.listen(PORT, () =>{

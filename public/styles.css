@@ -340,12 +340,20 @@ body {
 
 .edit-btn{
     background: #007bff;
-    color: #fff;
+    color: #333;
+}
+.edit-btn i{
+    pointer-events: none;
+    font-size: 1.2rem;
 }
 
 .delete-btn{
     background: #dc3545;
-    color: #fff;
+    color: #333;
+}
+.delete-btn i{
+    pointer-events: none;
+    font-size: 1.2rem;
 }
 
 .edit-btn:hover{ background: #0069d9; }

@@ -60,8 +60,8 @@ function renderTable(){
                 <td>${item.content}</td>
                 <td>${new Date(item.date).toLocaleDateString()}</td>
                 <td>
-                    <button class="action-btn edit-btn" onclick="editNews('${item.id}')">Edit</button>
-                    <button class="action-btn delete-btn" onclick="deleteNews('${item.id}')">Delete</button>
+                    <button class="action-btn edit-btn" onclick="editNews('${item._id}')"><i class="fa-regular fa-pen-to-square"></i></button>
+                    <button class="action-btn delete-btn" onclick="deleteNews('${item._id}')"><i class="fa-solid fa-eraser"></i></button>
                 </td>
             </tr>
         `;
@@ -94,21 +94,26 @@ form.addEventListener("reset", () => {
 });
 /* Edit */
 function editNews(id) {
-    const item = news.find(n => n.id === id);
-    document.getElementById("newsId").value = item.id;
+    const item = news.find(n => n._id === id);
+
+    document.getElementById("newsId").value = item._id;
     document.getElementById("title").value = item.title;
     document.getElementById("content").value = item.content;
+
     modalTitle.textContent = "Edit News";
     modal.classList.add("show");
 }
 /* Delete */
-function deleteNews(id) {
+async function deleteNews(id) {
     if (!confirm("Delete this news?")) return;
-    news = news.filter(n => n.id !== id);
-    renderTable();
+
+    await fetch(`/api/news/${id}`, {
+        method: "DELETE"
+    });
+    
+    loadNews();
 }
 
-renderTable();
 /*end script for news page modal*/
 
 
