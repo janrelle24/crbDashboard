@@ -61,7 +61,47 @@ app.put('/api/news/:id', async (req, res) =>{
 });
 /**end script for news**/
 /**start script for events**/
-
+//save events
+app.post('/api/events', async (req, res) =>{
+    try{
+        const event = await Events.create(req.body);
+        res.status(201).json(event);
+    }
+    catch(err){
+        res.status(500).json({ error: 'Failed to save events item' });
+    }
+});
+//render events
+app.get('/api/events', async (req, res) =>{
+    try{
+        const events = await Events.find().sort({ date: -1 });
+        res.json(events);
+    }catch(err){
+        res.status(500).json({ error: 'Failed to fetch events items' });
+    }
+});
+//update
+app.put('/api/events/:id', async (req, res) => {
+    try {
+        const updated = await Events.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+        res.json(updated);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to update event' });
+    }
+});
+//delete
+app.delete('/api/events/:id', async (req, res) => {
+    try {
+        await Events.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Event deleted' });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to delete event' });
+    }
+});
 /**end script for events**/
 //start server
 app.listen(PORT, () =>{

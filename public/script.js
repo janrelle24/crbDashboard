@@ -83,16 +83,20 @@ form.addEventListener("submit", async e => {
 
     const method = id ? "PUT" : "POST";
     const url = id ? `/api/news/${id}` : "/api/news";
-
-    await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, content })
-    });
-
-    modal.classList.remove("show");
-    form.reset();
-    loadNews();
+    try{
+        await fetch(url, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title, content })
+        });
+    
+        modal.classList.remove("show");
+        form.reset();
+        loadNews();
+    }catch(err){
+        console.error("Failed to save news:", err);
+    }
+    
 });
 /*cancel*/
 form.addEventListener("reset", () => {

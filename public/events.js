@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function(){
     const closeEventsModalBtns = document.querySelectorAll(".close-events-modal");
     const eventsTableBody = document.getElementById("eventsTableBody");
     const eventsForm = document.getElementById("eventsForm");
+    const eventsModalTitle = document.getElementById("eventsModalTitle");
 
     if (!monthYearEvents || !daysContainerEvents || !leftBtnEvents || !rightBtnEvents || !prevYearEvents || !nextYearEvents) {
         console.error("One or more required DOM elements are missing:", {
@@ -66,7 +67,64 @@ document.addEventListener('DOMContentLoaded', function(){
             `;
         });
     }
+    //save events
+    eventsForm.addEventListener("submit", async e=>{
+        e.preventDefault();
 
+        const id = document.getElementById("eventsId").value;
+        const title = document.getElementById("eventsTitle").value;
+        const date = document.getElementById("eventsDate").value;
+        const time = document.getElementById("eventsTime").value;
+        const place = document.getElementById("eventsPlace").value;
+        const agenda = document.getElementById("agenda").value;
+
+
+        const method = id ? "PUT" : "POST";
+        const url = id ? `/api/events/${id}` : "/api/events";
+
+        try{
+            await fetch(url, {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title, date, time, place, agenda })
+            });
+            eventsModal.classList.remove("show");
+            eventsForm.reset();
+            loadEvents();
+        }catch(err){
+            console.error("Failed to save event:", err);
+        }
+        
+    });
+    //cancel events
+    eventsForm.addEventListener("reset", () =>{
+        eventsModal.classList.remove("show");
+    });
+    //edit events
+    function editEvents(id) {
+        const item = events.find(e => e._id === id);
+        if (!item) return;
+    
+        document.getElementById("eventsId").value = item._id;
+        document.getElementById("eventsTitle").value = item.title;
+        document.getElementById("eventsDate").value = item.date.split("T")[0];
+        document.getElementById("eventsTime").value = item.time;
+        document.getElementById("eventsPlace").value = item.place;
+        document.getElementById("agenda").value = item.agenda;
+    
+        eventsModalTitle.textContent = "Edit Schedule";
+        eventsModal.classList.add("show");
+    }
+    //delete events
+    async function deleteEvents(id) {
+        if (!confirm("Delete this events?")) return;
+    
+        await fetch(`/api/events/${id}`, {
+            method: "DELETE"
+        });
+        
+        loadEvents();
+    }
     //render calendar
     function renderCalendarEvents(date){
         console.log("Rendering calendar for date:", date);
@@ -145,5 +203,8 @@ document.addEventListener('DOMContentLoaded', function(){
     
     loadEvents();
     renderCalendarEvents(currentDateEvents);
+
+    window.editEvents = editEvents;
+    window.deleteEvents = deleteEvents;
 });
 /* end script for events */
