@@ -1,3 +1,9 @@
+console.log("Calendar elements:", {
+    monthYear: document.getElementById("month-year-events"),
+    days: document.getElementById("days-events")
+});
+
+
 /*start script for sidebar hamburger btn*/
 function initSidebar() {
     const sidebar = document.getElementById("sidebar");
@@ -20,6 +26,8 @@ function initSidebar() {
 }
 /*end script for sidebar hamburger btn*/
 /*start script for news page modal*/
+document.addEventListener("DOMContentLoaded", loadNews);
+
 const modal = document.getElementById("newsModal");
 const openModalBtn = document.getElementById("openModal");
 const closeModalBtns = document.querySelectorAll(".close-modal"); 
@@ -34,8 +42,6 @@ async function loadNews() {
     news = await res.json();
     renderTable();
 }
-
-document.addEventListener("DOMContentLoaded", loadNews);
 
 /* Modal controls */
 openModalBtn.onclick = () =>{
@@ -115,6 +121,9 @@ async function deleteNews(id) {
 }
 
 /*end script for news page modal*/
+
+
+
 
 
 

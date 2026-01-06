@@ -245,7 +245,7 @@ body {
     color: #888;
 }
 /*end footer design*/
-/*news page design*/
+/* start news page design*/
 .main-pages{
     padding: 30px;
     margin-top: 10px;
@@ -438,3 +438,105 @@ body {
     color: #fff;
     transform: rotate(90deg);
 }
+/* end news page design*/
+/* start event page design*/
+.main-calendar {
+    display: flex;
+    justify-content: center;
+}
+.calendar-events {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 12px;
+    margin-top: 20px;
+    background: #ffffff;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* Header */
+.head-events {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #1e1e1e, #121212);
+    color: #fff;
+}
+#month-year-events {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+.events-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #ccc;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+.events-btn:hover {
+    background: #2b2b2b;
+    color: #fff;
+    transform: scale(1.05);
+}
+
+/* Weekdays */
+.weekdays-events {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: #f4f4f4;
+    border-bottom: 1px solid #ddd;
+}
+.weekdays-events div {
+    text-align: center;
+    padding: 10px 0;
+    font-size: 13px;
+    color: #666;
+}
+
+/* Days grid */
+.days-events {
+    min-height: 420px;
+    display: grid;
+    visibility: visible;
+    grid-template-columns: repeat(7, 1fr);
+    padding: 10px;
+    gap: 6px;
+}
+.days-events div {
+    height: 70px;
+    padding: 8px;
+    border-radius: 10px;
+    background: #fafafa;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+    position: relative;
+    text-align: center;
+}
+.days-events div:hover {
+    background: #ececec;
+    transform: scale(1.03);
+}
+.days-events .today-events {
+    background: orangered;
+    color: #fff;
+    font-weight: 600;
+}
+.days-events .today-events:hover {
+    background: #ff5722;
+}
+/* Adjusting the fade-events style to make it more visible */
+.days-events .fade-events {
+    background: #f0f0f0; /* Light background for better visibility */
+    cursor: default;
+    color: #aaa; /* Slightly darker color for better contrast */
+}
+
+/* end event page design*/

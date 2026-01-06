@@ -1,0 +1,91 @@
+/* start script for events */
+document.addEventListener('DOMContentLoaded', function(){
+    console.log("DOMContentLoaded event fired");
+
+    const monthYearEvents = document.getElementById("month-year-events");
+    const daysContainerEvents = document.getElementById("days-events");
+    const leftBtnEvents = document.getElementById("angle-left-events");
+    const rightBtnEvents = document.getElementById("angle-right-events");
+    const prevYearEvents = document.getElementById("prev-events");
+    const nextYearEvents = document.getElementById("next-events");
+
+    if (!monthYearEvents || !daysContainerEvents || !leftBtnEvents || !rightBtnEvents || !prevYearEvents || !nextYearEvents) {
+        console.error("One or more required DOM elements are missing:", {
+            monthYearEvents,
+            daysContainerEvents,
+            leftBtnEvents,
+            rightBtnEvents,
+            prevYearEvents,
+            nextYearEvents
+        });
+        return;
+    }
+
+    console.log("All required DOM elements are present");
+
+    const monthsEvents = [
+        'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 
+        'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'
+    ];
+    let currentDateEvents = new Date();
+    let todayEvents = new Date();
+
+    function renderCalendarEvents(date){
+        console.log("Rendering calendar for date:", date);
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDay = new Date(year, month + 1, 0).getDate();
+
+        console.log("Year:", year, "Month:", month, "First Day:", firstDay, "Last Day:", lastDay);
+
+        monthYearEvents.textContent = `${monthsEvents[month]} ${year}`;
+
+        daysContainerEvents.innerHTML = '';
+        // Previous month's dates
+        const prevMonthsLastDay = new Date(year, month, 0).getDate();
+        for (let i = firstDay; i > 0; i--) {
+            const dayDiv = document.createElement('div');
+            dayDiv.textContent = prevMonthsLastDay - i + 1;
+            dayDiv.classList.add('fade-events');
+            daysContainerEvents.appendChild(dayDiv);
+        }
+        // Current month's dates
+        for (let i = 1; i <= lastDay; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.textContent = i;
+            if (i === todayEvents.getDate() && month === todayEvents.getMonth() && year === todayEvents.getFullYear()) {
+                dayDiv.classList.add('today-events');
+            }
+            daysContainerEvents.appendChild(dayDiv);
+        }
+        // Next month's dates
+        const nextMonthStartDay = (7 - (firstDay + lastDay) % 7) % 7;
+        for (let i = 1; i <= nextMonthStartDay; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.textContent = i;
+            dayDiv.classList.add('fade-events');
+            daysContainerEvents.appendChild(dayDiv);
+        }
+    }
+
+    leftBtnEvents.addEventListener('click', function (){
+        currentDateEvents.setMonth(currentDateEvents.getMonth() - 1);
+        renderCalendarEvents(currentDateEvents);
+    });
+    rightBtnEvents.addEventListener('click', function (){
+        currentDateEvents.setMonth(currentDateEvents.getMonth() + 1);
+        renderCalendarEvents(currentDateEvents);
+    });
+    prevYearEvents.addEventListener('click', function(){
+        currentDateEvents.setFullYear(currentDateEvents.getFullYear() - 1);
+        renderCalendarEvents(currentDateEvents);
+    });
+    nextYearEvents.addEventListener('click', function(){
+        currentDateEvents.setFullYear(currentDateEvents.getFullYear() + 1);
+        renderCalendarEvents(currentDateEvents);
+    });
+    
+    renderCalendarEvents(currentDateEvents);
+});
+/* end script for events */
