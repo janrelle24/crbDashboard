@@ -66,6 +66,15 @@ document.addEventListener('DOMContentLoaded', function(){
             dayDiv.addEventListener("click", () =>{
                 eventsForm.reset();
                 document.getElementById("eventsId").value = "";
+
+                //format date
+                const selectedDate = new Date(year, month, i);
+                const yyyy = selectedDate.getFullYear();
+                const mm = String(selectedDate.getMonth() + 1).padStart(2, "0");
+                const dd = String(selectedDate.getDate()).padStart(2, "0");
+
+                document.getElementById("eventsDate").value =  `${yyyy}-${mm}-${dd}`;
+
                 eventsModal.classList.add("show");
             });
             daysContainerEvents.appendChild(dayDiv);
