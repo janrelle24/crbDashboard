@@ -4,6 +4,7 @@ const path = require("path");
 const connectDB = require("./config/db");
 
 const News = require("./model/news");
+const Events = require("./model/events");
 
 const app = express();
 const PORT = 3000;
@@ -59,6 +60,9 @@ app.put('/api/news/:id', async (req, res) =>{
     }
 });
 /**end script for news**/
+/**start script for events**/
+
+/**end script for events**/
 //start server
 app.listen(PORT, () =>{
     console.log(`Server running at http://localhost:${PORT}`);

@@ -35,6 +35,39 @@ document.addEventListener('DOMContentLoaded', function(){
     let currentDateEvents = new Date();
     let todayEvents = new Date();
 
+    let events = [];
+
+    async function loadEvents() {
+        try{
+            const res = await fetch("/api/events");
+        events = await res.json();
+        renderTable();
+        }catch(err){
+            console.error("Failed to load events", err);
+        } 
+    }
+    //render table
+    function renderTable(){
+        eventsTableBody.innerHTML = "";
+
+        events.forEach(item => {
+            eventsTableBody.innerHTML += `
+                <tr>
+                    <td>${item.title}</td>
+                    <td>${item.date}</td>
+                    <td>${item.time}</td>
+                    <td>${item.place}</td>
+                    <td>${item.agenda}</td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="editEvents('${item._id}')"><i class="fa-regular fa-pen-to-square"></i></button>
+                        <button class="action-btn delete-btn" onclick="deleteEvents('${item._id}')"><i class="fa-solid fa-eraser"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    //render calendar
     function renderCalendarEvents(date){
         console.log("Rendering calendar for date:", date);
         const year = date.getFullYear();
@@ -110,6 +143,7 @@ document.addEventListener('DOMContentLoaded', function(){
         btn.onclick = () => eventsModal.classList.remove("show");
     });
     
+    loadEvents();
     renderCalendarEvents(currentDateEvents);
 });
 /* end script for events */
