@@ -3,11 +3,16 @@ document.addEventListener('DOMContentLoaded', function(){
     console.log("DOMContentLoaded event fired");
 
     const monthYearEvents = document.getElementById("month-year-events");
-    const daysContainerEvents = document.getElementById("days-events");
+    const daysContainerEvents = document.getElementById("daysEvents");
     const leftBtnEvents = document.getElementById("angle-left-events");
     const rightBtnEvents = document.getElementById("angle-right-events");
     const prevYearEvents = document.getElementById("prev-events");
     const nextYearEvents = document.getElementById("next-events");
+
+    const eventsModal = document.getElementById("eventsModal");
+    const closeEventsModalBtns = document.querySelectorAll(".close-events-modal");
+    const eventsTableBody = document.getElementById("eventsTableBody");
+    const eventsForm = document.getElementById("eventsForm");
 
     if (!monthYearEvents || !daysContainerEvents || !leftBtnEvents || !rightBtnEvents || !prevYearEvents || !nextYearEvents) {
         console.error("One or more required DOM elements are missing:", {
@@ -57,6 +62,12 @@ document.addEventListener('DOMContentLoaded', function(){
             if (i === todayEvents.getDate() && month === todayEvents.getMonth() && year === todayEvents.getFullYear()) {
                 dayDiv.classList.add('today-events');
             }
+            //open modal / click day
+            dayDiv.addEventListener("click", () =>{
+                eventsForm.reset();
+                document.getElementById("eventsId").value = "";
+                eventsModal.classList.add("show");
+            });
             daysContainerEvents.appendChild(dayDiv);
         }
         // Next month's dates
@@ -84,6 +95,10 @@ document.addEventListener('DOMContentLoaded', function(){
     nextYearEvents.addEventListener('click', function(){
         currentDateEvents.setFullYear(currentDateEvents.getFullYear() + 1);
         renderCalendarEvents(currentDateEvents);
+    });
+    //close modal
+    closeEventsModalBtns.forEach(btn =>{
+        btn.onclick = () => eventsModal.classList.remove("show");
     });
     
     renderCalendarEvents(currentDateEvents);
