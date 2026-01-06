@@ -56,6 +56,38 @@
                 <tbody id="eventsTableBody"></tbody>
             </thead>
         </table>
+        <!--Modal-->
+        <div class="events-modal" id="eventsModal">
+            <div class="events-modal-content">
+                <div class="events-header">
+                    <h3 id="eventsModalTitle">Add Schedule</h3>
+                    <i class="fa-solid fa-xmark close-events-modal"></i>
+                </div>
+                <form action="" id="eventsForm">
+                    <input type="hidden" id="eventsId">
+    
+                    <label>Title</label>
+                    <input type="text" id="eventsTitle" required>
+    
+                    <label>Date</label>
+                    <input type="date" id="eventsDate" required>
+    
+                    <label>Time</label>
+                    <input type="time" id="eventsTime" required>
+    
+                    <label>Place</label>
+                    <input type="text" id="eventsPlace" required>
+    
+                    <label>Agenda</label>
+                    <textarea name="agenda" id="agenda" required></textarea>
+    
+                    <div class="events-actions">
+                        <button type="submit" class="primary-btn">Save</button>
+                        <button type="reset" class="secondary-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </main>
     <!--footer.html-->
     <div id="footer-placeholder"></div>
