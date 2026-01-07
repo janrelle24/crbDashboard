@@ -386,6 +386,7 @@ body {
     font-weight: 600;
 }
 .modal-content input[type="text"],
+.modal-content input[type="file"],
 .modal-content textarea{
     width: 100%;
     padding: 10px;

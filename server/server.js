@@ -1,4 +1,5 @@
 const express = require('express');
+const multer = require("multer");
 
 const path = require("path");
 const connectDB = require("./config/db");
@@ -16,11 +17,27 @@ connectDB();
 app.use(express.json());
 // Middleware to serve static files
 app.use(express.static(path.join(__dirname, "../public")));
+app.use("/uploads", express.static("uploads"));
+/* Multer config */
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "uploads/");
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + "-" + file.originalname);
+    }
+});
+
+const upload = multer({ storage });
 /**start script for news**/
 // save news
-app.post('/api/news', async (req, res) =>{
+app.post('/api/news', upload.single("image"), async (req, res) =>{
     try{
-        const news = await News.create(req.body);
+        const news = await News.create({
+            image: req.file ? `/uploads/${req.file.filename}` : "",
+            title: req.body.title,
+            content: req.body.content
+        });
         res.status(201).json(news);
     }
     catch(err){
@@ -49,9 +66,18 @@ app.delete('/api/news/:id', async (req, res) =>{
 //update news
 app.put('/api/news/:id', async (req, res) =>{
     try{
+        const updateData = {
+            title: req.body.title,
+            content: req.body.content
+        };
+
+        if (req.file) {
+            updateData.image = `/uploads/${req.file.filename}`;
+        }
+
         const updated = await News.findByIdAndUpdate(
             req.params.id,
-            req.body,
+            updateData,
             { new: true }
         );
         res.json(updated);
