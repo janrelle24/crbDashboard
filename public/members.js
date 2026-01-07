@@ -88,4 +88,28 @@ membersForm.addEventListener("submit", async e => {
 membersForm.addEventListener("reset", () => {
     membersModal.classList.remove("show");
 });
+// Edit 
+function editMembers(id) {
+    const item = members.find(n => n._id === id);
+
+    document.getElementById("membersId").value = item._id;
+    document.getElementById("name").value = item.name;
+    document.getElementById("position").value = item.position;
+    document.getElementById("birthDate").value = item.birthDate.split("T")[0];
+    document.getElementById("education").value = item.education;
+    document.getElementById("achievements").value = item.achievements;
+
+    modalTitle.textContent = "Edit Members";
+    membersModal.classList.add("show");
+}
+// Delete 
+async function deleteMembers(id) {
+    if (!confirm("Delete this members?")) return;
+
+    await fetch(`/api/members/${id}`, {
+        method: "DELETE"
+    });
+    
+    loadMembers();
+}
 /*end script for members page */

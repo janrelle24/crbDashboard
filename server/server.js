@@ -202,6 +202,40 @@ app.get('/api/members', async (req, res) =>{
         res.status(500).json({ error: 'Failed to fetch members items' });
     }
 });
+//delete members
+app.delete('/api/members/:id', async (req, res) =>{
+    try{
+        await Members.findByIdAndDelete(req.params.id);
+        res.json({ message: "Members deleted" });
+    }catch(err){
+        res.status(500).json({ error: 'Failed to delete members item' });
+    }
+});
+//update members
+app.put('/api/members/:id', async (req, res) =>{
+    try{
+        const updateData = {
+            name: req.body.name,
+            position: req.body.position,
+            birthDate: req.body.birthDate,
+            education: req.body.education,
+            achievements: req.body.achievements,
+        };
+
+        if (req.file) {
+            updateData.image = `/uploads/${req.file.filename}`;
+        }
+
+        const updated = await Members.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            { new: true }
+        );
+        res.json(updated);
+    }catch(err){
+        res.status(500).json({ error: "Update failed" });
+    }
+});
 /**end script for members**/
 //start server
 app.listen(PORT, () =>{
