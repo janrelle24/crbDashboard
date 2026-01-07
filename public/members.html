@@ -12,9 +12,58 @@
     <div id="header-placeholder"></div>
     <!--nav.html-->
     <div id="nav-placeholder"></div>
-    <main>
-        <h1>Members Page</h1>
-        <p>This is the members content area.</p>
+    <main class="main-pages">
+        <div class="main-header">
+            <h2>Welcome to Members Page</h2>
+            <button id="openModalMembers" class="primary-btn">
+                <i class="fa-solid fa-plus"></i> Add Members
+            </button>
+        </div>
+        <!--Members table-->
+        <table class="main-table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Birth Date</th>
+                    <th>Education</th>
+                    <th>Achievements</th>
+                    <th width="160">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="membersTableBody"></tbody>
+        </table>
+        <!--Modal-->
+        <div class="modal" id="membersModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Add Members</h3>
+                    <i class="fa-solid fa-xmark close-modal"></i>
+                </div>
+                <form action="" id="membersForm">
+                    <input type="hidden" id="membersId">
+
+                    <label>Image</label>
+                    <input type="file" id="image" name="image" accept="image/*" required>
+
+                    <label>Name</label>
+                    <input type="text" id="name" required>
+
+                    <label>Position</label>
+                    <input type="text" id="position" required>
+
+                    <label>Birth Date</label>
+                    <input type="date" id="birthDate" required>
+
+                    <label>Education</label>
+                    <input type="text" id="education" required>
+
+                    <label>Achievements</label>
+                    <input type="text" id="achievements" required>
+                </form>
+            </div>
+        </div>
     </main>
     <!--footer.html-->
     <div id="footer-placeholder"></div>
