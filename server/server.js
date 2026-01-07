@@ -6,6 +6,7 @@ const connectDB = require("./config/db");
 
 const News = require("./model/news");
 const Events = require("./model/events");
+const Ordinance = require("./model/ordinance");
 
 const app = express();
 const PORT = 3000;
@@ -129,6 +130,27 @@ app.delete('/api/events/:id', async (req, res) => {
     }
 });
 /**end script for events**/
+/**start script for ordinance**/
+//save ordinance
+app.post('/api/ordinance', async (req, res) =>{
+    try{
+        const ordinance = await Ordinance.create(req.body);
+        res.status(201).json(ordinance);
+    }
+    catch(err){
+        res.status(500).json({ error: 'Failed to save ordinance item' });
+    }
+});
+//render ordinance
+app.get('/api/ordinance', async (req, res) =>{
+    try{
+        const ordinance = await Ordinance.find().sort({ date: -1 });
+        res.json(ordinance);
+    }catch(err){
+        res.status(500).json({ error: 'Failed to fetch ordinance items' });
+    }
+});
+/**end script for ordinance**/
 //start server
 app.listen(PORT, () =>{
     console.log(`Server running at http://localhost:${PORT}`);
