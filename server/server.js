@@ -7,6 +7,7 @@ const connectDB = require("./config/db");
 const News = require("./model/news");
 const Events = require("./model/events");
 const Ordinance = require("./model/ordinance");
+const Members = require("./model/members");
 
 const app = express();
 const PORT = 3000;
@@ -172,8 +173,36 @@ app.delete('/api/ordinance/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to delete ordinance' });
     }
 });
-
 /**end script for ordinance**/
+/**start script for members**/
+// save members
+app.post('/api/members', upload.single("image"), async (req, res) =>{
+    try{
+        const members = await Members.create({
+            image: req.file ? `/uploads/${req.file.filename}` : "",
+            name: req.body.name,
+            position: req.body.position,
+            birthDate: req.body.birthDate,
+            education: req.body.education,
+            achievements: req.body.achievements
+        });
+        res.status(201).json(members);
+    }
+    catch(err){
+        res.status(500).json({ error: 'Failed to save members item' });
+    }
+});
+
+//render members
+app.get('/api/members', async (req, res) =>{
+    try{
+        const members = await Members.find().sort({ date: -1 });
+        res.json(members);
+    }catch(err){
+        res.status(500).json({ error: 'Failed to fetch members items' });
+    }
+});
+/**end script for members**/
 //start server
 app.listen(PORT, () =>{
     console.log(`Server running at http://localhost:${PORT}`);
