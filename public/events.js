@@ -41,8 +41,8 @@ document.addEventListener('DOMContentLoaded', function(){
     async function loadEvents() {
         try{
             const res = await fetch("/api/events");
-        events = await res.json();
-        renderTable();
+            events = await res.json();
+            renderTable();
         }catch(err){
             console.error("Failed to load events", err);
         } 

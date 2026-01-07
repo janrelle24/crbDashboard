@@ -250,13 +250,13 @@ body {
     padding: 30px;
     margin-top: 10px;
 }
-.news-header{
+.main-header{ /*one*/
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 50px;
 }
-.news-header h2{
+.main-header h2{ /*one*/
     margin: 0;
     font-size: 26px;
     font-weight: 700;
@@ -299,7 +299,7 @@ body {
     background-color: #666;
     transform: translateY(-1px);
 }
-.news-table{
+.main-table{ /*one*/
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
@@ -308,24 +308,24 @@ body {
     overflow: hidden;
     box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }
-.news-table thead{
+.main-table thead{
     background: #1e1e1e;
     color: #fff;
 }
 
-.news-table th,
-.news-table td{
+.main-table th,
+.main-table td{
     padding: 14px 16px;
     text-align: left;
     font-size: 14px;
 }
 
-.news-table tbody tr{
+.main-table tbody tr{
     border-bottom: 1px solid #eee;
     transition: background-color 0.2s ease;
 }
 
-.news-table tbody tr:hover{
+.main-table tbody tr:hover{
     background-color: #f9f9f9;
 }
 /* Actions column buttons */
@@ -387,6 +387,8 @@ body {
 }
 .modal-content input[type="text"],
 .modal-content input[type="file"],
+.modal-content input[type="time"],
+.modal-content input[type="date"],
 .modal-content textarea{
     width: 100%;
     padding: 10px;
@@ -540,104 +542,7 @@ body {
     color: #aaa; /* Slightly darker color for better contrast */
 }
 /* end event page design*/
-/*start events table design*/
-.events-table{
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background: #ffffff;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-.events-table thead{
-    background: #1e1e1e;
-    color: #fff;
-}
-.events-table th, .events-table td{
-    padding: 14px 16px;
-    text-align: left;
-    font-size: 14px;
-}
-.events-table tbody tr{
-    border-bottom: 1px solid #eee;
-    transition: background-color 0.2s ease;
-}
-.events-table tbody tr:hover{
-    background-color: #f9f9f9;
-}
-/*end events table design*/
-/*start events modal design*/
-.events-modal{
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-}
-.events-modal.show{
-    display: flex;
-}
-.events-modal-content{
-    background: #1e1e1e;
-    width: 520px;
-    padding: 24px;
-    border-radius: 10px;
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    animation: eventsScaleIn .2s ease;
-}
-.events-modal-content label{
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-}
-.events-modal-content input[type="text"],
-.events-modal-content input[type="date"],
-.events-modal-content input[type="time"],
-.events-modal-content textarea{
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #444;
-    border-radius: 4px;
-    background: #2b2b2b;
-    color: #fff;
-    font-size: 14px;
-}
-.events-modal-content input:focus,
-.events-modal-content textarea:focus{
-    border-color: orangered;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(255,69,0,0.3);
-}
-.events-modal-content textarea{
-    min-height: 120px;
-    resize: vertical;
-}
-.events-actions{
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-}
-@keyframes eventsScaleIn {
-    from { transform: scale(.9); opacity: 0 }
-    to { transform: scale(1); opacity: 1 }
-}
-.events-header{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-.events-header h3{
-    margin: 0;
-    font-size: 20px;
-    font-weight: 600;
-}
+
 .close-events-modal{
     font-size: 22px;
     cursor: pointer;

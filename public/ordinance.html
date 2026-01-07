@@ -12,13 +12,53 @@
     <div id="header-placeholder"></div>
     <!--nav.html-->
     <div id="nav-placeholder"></div>
-    <main>
-        <h1>Ordinance Page</h1>
-        <p>This is the ordinance content area.</p>
+    <main class="main-pages">
+        <div class="main-header">
+            <h2>Welcom to Ordinance Page</h2>
+            <button id="openModalOrdinance" class="primary-btn">
+                <i class="fa-solid fa-plus"></i> Create 
+            </button>
+        </div>
+        <!--Ordinance Table-->
+        <table class="main-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Content</th>
+                    <th>Date</th>
+                    <th width="160">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="ordinanceTableBody"></tbody>
+        </table>
+        <!--Modal-->
+        <div class="modal" id="ordinanceModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Post News</h3>
+                    <i class="fa-solid fa-xmark close-modal"></i>
+                </div>
+                <form action="" id="ordinanceForm">
+                    <input type="hidden" id="ordinanceId">
+                    
+                    <label>Title</label>
+                    <input type="text" id="title" required>
+
+                    <label>Content</label>
+                    <textarea id="content" required></textarea>
+
+                    <div class="modal-actions">
+                        <button type="submit" class="primary-btn">Save</button>
+                        <button type="reset" class="secondary-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </main>
     <!--footer.html-->
     <div id="footer-placeholder"></div>
     <script src="common.js" defer></script>
     <script src="script.js" defer></script>
+    <script src="ordinance.js"></script>
 </body>
 </html>
