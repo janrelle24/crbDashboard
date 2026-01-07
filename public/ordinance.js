@@ -40,8 +40,8 @@ function renderTable(){
                 <td>${item.content}</td>
                 <td>${new Date(item.date).toLocaleDateString()}</td>
                 <td>
-                    <button class="action-btn edit-btn" onclick="editNews('${item._id}')"><i class="fa-regular fa-pen-to-square"></i></button>
-                    <button class="action-btn delete-btn" onclick="deleteNews('${item._id}')"><i class="fa-solid fa-eraser"></i></button>
+                    <button class="action-btn edit-btn" onclick="editOrdinance('${item._id}')"><i class="fa-regular fa-pen-to-square"></i></button>
+                    <button class="action-btn delete-btn" onclick="deleteOrdinance('${item._id}')"><i class="fa-solid fa-eraser"></i></button>
                 </td>
             </tr>
         `;
@@ -75,4 +75,25 @@ ordinanceForm.addEventListener("submit", async e =>{
 ordinanceForm.addEventListener("reset", () =>{
     ordinanceModal.classList.remove("show");
 });
+//edit ordinance
+function editOrdinance(id) {
+    const item = ordinance.find(n => n._id === id);
+
+    document.getElementById("ordinanceId").value = item._id;
+    document.getElementById("title").value = item.title;
+    document.getElementById("content").value = item.content;
+
+    modalTitle.textContent = "Edit";
+    ordinanceModal.classList.add("show");
+}
+//delete ordinance
+async function deleteOrdinance(id) {
+    if (!confirm("Delete this ordinance?")) return;
+
+    await fetch(`/api/ordinance/${id}`, {
+        method: "DELETE"
+    });
+    
+    loadOrdinance();
+}
 /*end script for ordinance page*/

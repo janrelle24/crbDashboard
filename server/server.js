@@ -150,6 +150,29 @@ app.get('/api/ordinance', async (req, res) =>{
         res.status(500).json({ error: 'Failed to fetch ordinance items' });
     }
 });
+//update
+app.put('/api/ordinance/:id', async (req, res) => {
+    try {
+        const updated = await Ordinance.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+        res.json(updated);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to update ordinance' });
+    }
+});
+//delete
+app.delete('/api/ordinance/:id', async (req, res) => {
+    try {
+        await Ordinance.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Ordinance deleted' });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to delete ordinance' });
+    }
+});
+
 /**end script for ordinance**/
 //start server
 app.listen(PORT, () =>{
