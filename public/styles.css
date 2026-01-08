@@ -389,6 +389,7 @@ body {
 .modal-content input[type="file"],
 .modal-content input[type="time"],
 .modal-content input[type="date"],
+.modal-content select,
 .modal-content textarea{
     width: 100%;
     padding: 10px;
