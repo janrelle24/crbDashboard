@@ -8,6 +8,7 @@ const News = require("./model/news");
 const Events = require("./model/events");
 const Ordinance = require("./model/ordinance");
 const Members = require("./model/members");
+const Live = require("./model/live");
 
 const app = express();
 const PORT = 3000;
@@ -237,6 +238,9 @@ app.put('/api/members/:id', async (req, res) =>{
     }
 });
 /**end script for members**/
+/**start script for live**/
+
+/**end script for live**/
 //start server
 app.listen(PORT, () =>{
     console.log(`Server running at http://localhost:${PORT}`);

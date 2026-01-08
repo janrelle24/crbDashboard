@@ -12,13 +12,58 @@
     <div id="header-placeholder"></div>
     <!--nav.html-->
     <div id="nav-placeholder"></div>
-    <main>
-        <h1>Live Page</h1>
-        <p>This is the live content area.</p>
+    <main class="main-pages">
+        <div class="main-header">
+            <h2>Welcome to Live Page</h2>
+            <button id="openModalLive" class="primary-btn">
+                <i class="fa-solid fa-plus"></i> Post Live 
+            </button>
+        </div>
+        <!--Live Table-->
+        <table class="main-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th width="160">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="liveTableBody"></tbody>
+        </table>
+        <!--modal-->
+        <div class="modal" id="liveModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Post Live</h3>
+                    <i class="fa-solid fa-xmark close-modal"></i>
+                </div>
+                <form action="" id="liveForm">
+                    <input type="hidden" id="liveId">
+
+                    <label>Title</label>
+                    <input type="text" id="title" required>
+
+                    <label>Embed URL</label>
+                    <input type="text" id="embedUrl" placeholder="YouTube / Facebook Embed URL" required>
+
+                    <label>Status</label>
+                    <select id="status">
+                        <option value="LIVE">LIVE</option>
+                        <option value="OFFLINE">OFFLINE</option>
+                    </select>
+
+                    <div class="modal-actions">
+                        <button type="submit" class="primary-btn">Save</button>
+                        <button type="reset" class="secondary-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </main>
     <!--footer.html-->
     <div id="footer-placeholder"></div>
     <script src="common.js" defer></script>
     <script src="script.js" defer></script>
+    <script src="live.js" defer></script>
 </body>
 </html>
