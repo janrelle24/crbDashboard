@@ -74,4 +74,26 @@ liveForm.addEventListener("submit", async e =>{
 liveForm.addEventListener("reset", () =>{
     liveModal.classList.remove("show");
 });
+//edit live
+function editLive(id) {
+    const item = live.find(n => n._id === id);
+
+    document.getElementById("liveId").value = item._id;
+    document.getElementById("title").value = item.title;
+    document.getElementById("embedUrl").value = item.embedUrl;
+    document.getElementById("status").value = item.status;
+
+    modalTitle.textContent = "Edit";
+    liveModal.classList.add("show");
+}
+//delete ordinance
+async function deleteLive(id) {
+    if (!confirm("Delete this live?")) return;
+
+    await fetch(`/api/live/${id}`, {
+        method: "DELETE"
+    });
+    
+    loadLive();
+}
 /*end script for live page */

@@ -258,6 +258,28 @@ app.get('/api/live', async (req, res) =>{
         res.status(500).json({ error: 'Failed to fetch live items' });
     }
 });
+//update
+app.put('/api/live/:id', async (req, res) => {
+    try {
+        const updated = await Live.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+        res.json(updated);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to update live' });
+    }
+});
+//delete
+app.delete('/api/live/:id', async (req, res) => {
+    try {
+        await Live.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Live deleted' });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to delete live' });
+    }
+});
 /**end script for live**/
 //start server
 app.listen(PORT, () =>{
