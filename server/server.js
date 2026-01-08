@@ -239,7 +239,25 @@ app.put('/api/members/:id', async (req, res) =>{
 });
 /**end script for members**/
 /**start script for live**/
-
+//save live
+app.post('/api/live', async (req, res) =>{
+    try{
+        const live = await Live.create(req.body);
+        res.status(201).json(live);
+    }
+    catch(err){
+        res.status(500).json({ error: 'Failed to save live item' });
+    }
+});
+//render live
+app.get('/api/live', async (req, res) =>{
+    try{
+        const live = await Live.find().sort({ date: -1 });
+        res.json(live);
+    }catch(err){
+        res.status(500).json({ error: 'Failed to fetch live items' });
+    }
+});
 /**end script for live**/
 //start server
 app.listen(PORT, () =>{

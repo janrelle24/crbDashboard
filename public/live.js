@@ -29,4 +29,49 @@ openModalLive.onclick = () =>{
 closeModalBtns.forEach(btn =>{
     btn.onclick = () => liveModal.classList.remove("show");
 });
+//render table
+function renderTable(){
+    liveTableBody.innerHTML = "";
+    live.forEach(item =>{
+        liveTableBody.innerHTML += `
+            <tr>
+                <td>${item.title}</td>
+                <td>${item.status}</td>
+                <td>
+                    <button class="action-btn edit-btn" onclick="editLive('${item._id}')"><i class="fa-regular fa-pen-to-square"></i></button>
+                    <button class="action-btn delete-btn" onclick="deleteLive('${item._id}')"><i class="fa-solid fa-eraser"></i></button>
+                </td>
+            </tr>
+        `;
+    });
+}
+//save live
+liveForm.addEventListener("submit", async e =>{
+    e.preventDefault();
+
+    const id = document.getElementById("liveId").value;
+    const title = document.getElementById("title").value;
+    const embedUrl = document.getElementById("embedUrl").value;
+    const status = document.getElementById("status").value;
+
+    const method = id ? "PUT" : "POST";
+    const url = id ? `/api/live/${id}` : "/api/live";
+
+    try{
+        await fetch(url, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title, embedUrl, status })
+        });
+        liveModal.classList.remove("show");
+        liveForm.reset();
+        loadLive();
+    }catch(err){
+        console.error("Failed to save live:", err);
+    }
+});
+//cancel live
+liveForm.addEventListener("reset", () =>{
+    liveModal.classList.remove("show");
+});
 /*end script for live page */
