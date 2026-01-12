@@ -12,9 +12,74 @@
     <div id="header-placeholder"></div>
     <!--nav.html-->
     <div id="nav-placeholder"></div>
-    <main>
-        <h1>Welcome to CBR Dashboard</h1>
-        <p>This is the main content area.</p>
+    <main class="main-pages">
+        <header class="dash-header">
+            <h1>CBR Administrative Dashboard</h1>
+            <p>System Overview & Content Management</p>
+            <small>Welcome, Administrator</small>
+        </header>
+        <!-- STAT CARDS -->
+        <section class="stats">
+            <div class="card">
+                📰
+                <h2 id="newsCount">12</h2>
+                <span>News Posts</span>
+            </div>
+            <div class="card">
+                📅
+                <h2 id="eventsCount">5</h2>
+                <span>Events</span>
+            </div>
+            <div class="card">
+                📡
+                <h2 id="liveCount">2</h2>
+                <span>Live Streams</span>
+            </div>
+            <div class="card">
+                📜
+                <h2 id="ordinanceCount">8</h2>
+                <span>Ordinances</span>
+            </div>
+            <div class="card">
+                👥
+                <h2 id="membersCount">20</h2>
+                <span>Members</span>
+            </div>
+        </section>
+        <!-- MAIN GRID -->
+        <section class="dashboard-grid">
+
+            <!-- QUICK ACTIONS -->
+            <div class="quick-actions">
+                <h3>Quick Actions</h3>
+                <button id="createNews">➕ Post News</button>
+                <button id="createEvent">➕ Add Schedule</button>
+                <button id="addLive">📡 Post Live</button>
+                <button id="addOrdinance">📜 Create Ordinance</button>
+            </div>
+
+            <!-- SYSTEM STATUS -->
+            <div class="system-status">
+                <h3>System Status</h3>
+                <ul>
+                    <li>✔ Database Connected</li>
+                    <li>✔ API Running</li>
+                    <li>✔ Uploads Enabled</li>
+                    <li>✔ Security Active</li>
+                </ul>
+            </div>
+
+            <!-- RECENT ACTIVITY -->
+            <div class="recent-activity">
+                <h3>Recent Activity</h3>
+                <ul>
+                    <li>📰 News added: Barangay Cleanup Drive</li>
+                    <li>📅 Event updated: Health Seminar</li>
+                    <li>📡 Live scheduled: Council Meeting</li>
+                </ul>
+            </div>
+
+        </section>
     </main>
     <!--footer.html-->
     <div id="footer-placeholder"></div>
