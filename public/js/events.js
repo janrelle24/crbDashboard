@@ -37,12 +37,22 @@ document.addEventListener('DOMContentLoaded', function(){
     let todayEvents = new Date();
 
     let events = [];
+    let eventDates = new Set();
 
     async function loadEvents() {
         try{
             const res = await fetch("/api/events");
             events = await res.json();
+
+            //build set of event dates
+            eventDates.clear();
+            events.forEach(e => {
+                eventDates.add(formatDateKey(e.date));
+            });
+
+
             renderTable();
+            renderCalendarEvents(currentDateEvents); // re-render calendar
         }catch(err){
             console.error("Failed to load events", err);
         } 
@@ -150,8 +160,18 @@ document.addEventListener('DOMContentLoaded', function(){
         for (let i = 1; i <= lastDay; i++) {
             const dayDiv = document.createElement('div');
             dayDiv.textContent = i;
+
+            const dateKey = formatDateKey(new Date(year, month, i));
+
+            //highlight today
             if (i === todayEvents.getDate() && month === todayEvents.getMonth() && year === todayEvents.getFullYear()) {
                 dayDiv.classList.add('today-events');
+            }
+            //  ADD DOT IF EVENT EXISTS
+            if (eventDates.has(dateKey)) {
+                const dot = document.createElement("span");
+                dot.classList.add("event-dot");
+                dayDiv.appendChild(dot);
             }
             //open modal / click day
             dayDiv.addEventListener("click", () =>{
@@ -178,6 +198,13 @@ document.addEventListener('DOMContentLoaded', function(){
             dayDiv.classList.add('fade-events');
             daysContainerEvents.appendChild(dayDiv);
         }
+    }
+    function formatDateKey(date){
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
     }
 
     leftBtnEvents.addEventListener('click', function (){
