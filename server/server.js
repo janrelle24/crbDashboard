@@ -1,7 +1,11 @@
+require("dotenv").config();
 const express = require('express');
 const multer = require("multer");
-
 const path = require("path");
+//Load env + auth deps
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
 const connectDB = require("./config/db");
 
 const News = require("./model/news");
@@ -9,6 +13,7 @@ const Events = require("./model/events");
 const Ordinance = require("./model/ordinance");
 const Members = require("./model/members");
 const Live = require("./model/live");
+const User = require("./model/user");
 
 const app = express();
 const PORT = 3000;
@@ -32,9 +37,77 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+
+//JWT middleware
+const auth = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+        return res.status(401).json({ message: "No token provided" });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch (err) {
+        res.status(401).json({ message: "Invalid token" });
+    }
+};
+//register
+app.post("/api/register", async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        const exists = await User.findOne({ username });
+        if (exists) {
+            return res.status(400).json({ message: "User already exists" });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await User.create({
+            username,
+            password: hashedPassword
+        });
+
+        res.json({ message: "User registered successfully" });
+    } catch (err) {
+        res.status(500).json({ error: "Registration failed" });
+    }
+});
+//login
+app.post("/api/login", async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).json({ message: "Invalid credentials" });
+        }
+
+        const match = await bcrypt.compare(password, user.password);
+        if (!match) {
+            return res.status(400).json({ message: "Invalid credentials" });
+        }
+
+        const token = jwt.sign(
+            { id: user._id, username: user.username },
+            process.env.JWT_SECRET,
+            { expiresIn: "1d" }
+        );
+
+        res.json({ token });
+    } catch (err) {
+        res.status(500).json({ error: "Login failed" });
+    }
+});
+
 /**start script for news**/
 // save news
-app.post('/api/news', upload.single("image"), async (req, res) =>{
+app.post('/api/news', auth, upload.single("image"), async (req, res) =>{
     try{
         const news = await News.create({
             image: req.file ? `/uploads/${req.file.filename}` : "",
@@ -58,7 +131,7 @@ app.get('/api/news', async (req, res) =>{
     }
 });
 //delete news
-app.delete('/api/news/:id', async (req, res) =>{
+app.delete('/api/news/:id', auth, async (req, res) =>{
     try{
         await News.findByIdAndDelete(req.params.id);
         res.json({ message: "News deleted" });
@@ -67,7 +140,7 @@ app.delete('/api/news/:id', async (req, res) =>{
     }
 });
 //update news
-app.put('/api/news/:id', async (req, res) =>{
+app.put('/api/news/:id', auth, async (req, res) =>{
     try{
         const updateData = {
             title: req.body.title,
@@ -100,7 +173,7 @@ app.get("/api/news/count", async (req, res) =>{
 /**end script for news**/
 /**start script for events**/
 //save events
-app.post('/api/events', async (req, res) =>{
+app.post('/api/events', auth, async (req, res) =>{
     try{
         const event = await Events.create(req.body);
         res.status(201).json(event);
@@ -119,7 +192,7 @@ app.get('/api/events', async (req, res) =>{
     }
 });
 //update
-app.put('/api/events/:id', async (req, res) => {
+app.put('/api/events/:id', auth, async (req, res) => {
     try {
         const updated = await Events.findByIdAndUpdate(
             req.params.id,
@@ -132,7 +205,7 @@ app.put('/api/events/:id', async (req, res) => {
     }
 });
 //delete
-app.delete('/api/events/:id', async (req, res) => {
+app.delete('/api/events/:id', auth, async (req, res) => {
     try {
         await Events.findByIdAndDelete(req.params.id);
         res.json({ message: 'Event deleted' });
@@ -152,7 +225,7 @@ app.get("/api/events/count", async (req, res) =>{
 /**end script for events**/
 /**start script for ordinance**/
 //save ordinance
-app.post('/api/ordinance', async (req, res) =>{
+app.post('/api/ordinance', auth, async (req, res) =>{
     try{
         const ordinance = await Ordinance.create(req.body);
         res.status(201).json(ordinance);
@@ -171,7 +244,7 @@ app.get('/api/ordinance', async (req, res) =>{
     }
 });
 //update
-app.put('/api/ordinance/:id', async (req, res) => {
+app.put('/api/ordinance/:id', auth, async (req, res) => {
     try {
         const updated = await Ordinance.findByIdAndUpdate(
             req.params.id,
@@ -184,7 +257,7 @@ app.put('/api/ordinance/:id', async (req, res) => {
     }
 });
 //delete
-app.delete('/api/ordinance/:id', async (req, res) => {
+app.delete('/api/ordinance/:id', auth, async (req, res) => {
     try {
         await Ordinance.findByIdAndDelete(req.params.id);
         res.json({ message: 'Ordinance deleted' });
@@ -204,7 +277,7 @@ app.get("/api/ordinance/count", async (req, res) =>{
 /**end script for ordinance**/
 /**start script for members**/
 // save members
-app.post('/api/members', upload.single("image"), async (req, res) =>{
+app.post('/api/members', auth, upload.single("image"), async (req, res) =>{
     try{
         const members = await Members.create({
             image: req.file ? `/uploads/${req.file.filename}` : "",
@@ -231,7 +304,7 @@ app.get('/api/members', async (req, res) =>{
     }
 });
 //delete members
-app.delete('/api/members/:id', async (req, res) =>{
+app.delete('/api/members/:id', auth, async (req, res) =>{
     try{
         await Members.findByIdAndDelete(req.params.id);
         res.json({ message: "Members deleted" });
@@ -240,7 +313,7 @@ app.delete('/api/members/:id', async (req, res) =>{
     }
 });
 //update members
-app.put('/api/members/:id', async (req, res) =>{
+app.put('/api/members/:id', auth, async (req, res) =>{
     try{
         const updateData = {
             name: req.body.name,
@@ -276,7 +349,7 @@ app.get("/api/members/count", async (req, res) =>{
 /**end script for members**/
 /**start script for live**/
 //save live
-app.post('/api/live', async (req, res) =>{
+app.post('/api/live', auth, async (req, res) =>{
     try{
         const live = await Live.create(req.body);
         res.status(201).json(live);
@@ -295,7 +368,7 @@ app.get('/api/live', async (req, res) =>{
     }
 });
 //update
-app.put('/api/live/:id', async (req, res) => {
+app.put('/api/live/:id', auth, async (req, res) => {
     try {
         const updated = await Live.findByIdAndUpdate(
             req.params.id,
@@ -308,7 +381,7 @@ app.put('/api/live/:id', async (req, res) => {
     }
 });
 //delete
-app.delete('/api/live/:id', async (req, res) => {
+app.delete('/api/live/:id', auth, async (req, res) => {
     try {
         await Live.findByIdAndDelete(req.params.id);
         res.json({ message: 'Live deleted' });
