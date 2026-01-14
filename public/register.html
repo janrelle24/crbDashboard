@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBR Admin Register</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <main class="main-pages">
+        <div class="auth-page">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <h2>CBR Admin Panel</h2>
+                    <p class="auth-subtitle">Create an administrator account</p>
+
+                    <form id="registerForm">
+                        <label>Username</label>
+                        <input type="text" id="regUsername" required>
+
+                        <label>Password</label>
+                        <input type="password" id="regPassword" required>
+
+                        <label>Confirm Password</label>
+                        <input type="password" id="regConfirmPassword" required>
+
+                        <button type="submit" class="primary-btn full-btn">
+                            Register
+                        </button>
+
+                        <p class="auth-switch">
+                            Already have an account?
+                            <a href="login.html">Login</a>
+                        </p>
+
+                        <p id="registerError" class="error-text"></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
