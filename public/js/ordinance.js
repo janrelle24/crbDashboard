@@ -70,8 +70,8 @@ ordinanceForm.addEventListener("submit", async e =>{
 
     try{
         await fetch(url, {
-            method,
-            headers: { "Content-Type": "application/json" },
+            method: "POST",
+            headers: authHeaders({ "Content-Type": "application/json" }),
             body: JSON.stringify({ title, content })
         });
         ordinanceModal.classList.remove("show");

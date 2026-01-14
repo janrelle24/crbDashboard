@@ -61,6 +61,10 @@ app.post("/api/register", async (req, res) => {
     try {
         const { username, password } = req.body;
 
+        if (password.length < 10) {
+            return res.status(400).json({ message: "Password too short" });
+        }
+        
         const exists = await User.findOne({ username });
         if (exists) {
             return res.status(400).json({ message: "User already exists" });

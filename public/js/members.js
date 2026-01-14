@@ -72,7 +72,8 @@ membersForm.addEventListener("submit", async e => {
     const url = id ? `/api/members/${id}` : "/api/members";
     try{
         await fetch(url, {
-            method,
+            method: "POST",
+            headers: authHeaders(),
             body: formData
         });
     

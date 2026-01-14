@@ -94,8 +94,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
         try{
             await fetch(url, {
-                method,
-                headers: { "Content-Type": "application/json" },
+                method: "POST",
+                headers: authHeaders({ "Content-Type": "application/json" }),
                 body: JSON.stringify({ title, date, time, place, agenda })
             });
             eventsModal.classList.remove("show");

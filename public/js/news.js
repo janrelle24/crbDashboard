@@ -77,7 +77,8 @@ form.addEventListener("submit", async e => {
     const url = id ? `/api/news/${id}` : "/api/news";
     try{
         await fetch(url, {
-            method,
+            method: "POST",
+            headers: authHeaders(),
             body: formData
         });
     
