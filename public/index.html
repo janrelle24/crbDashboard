@@ -21,28 +21,28 @@
         <!-- STAT CARDS -->
         <section class="stats">
             <div class="card">
-                📰
-                <h2 id="newsCount">12</h2>
+                <i class="fa-regular fa-newspaper"></i>
+                <h2 id="newsCount">0</h2>
                 <span>News Posts</span>
             </div>
             <div class="card">
-                📅
-                <h2 id="eventsCount">5</h2>
+                <i class="fa-regular fa-calendar"></i>
+                <h2 id="eventsCount">0</h2>
                 <span>Events</span>
             </div>
             <div class="card">
-                📡
-                <h2 id="liveCount">2</h2>
+                <i class="fa-solid fa-video"></i>
+                <h2 id="liveCount">0</h2>
                 <span>Live Streams</span>
             </div>
             <div class="card">
-                📜
-                <h2 id="ordinanceCount">8</h2>
+                <i class="fa-solid fa-gavel"></i>
+                <h2 id="ordinanceCount">0</h2>
                 <span>Ordinances</span>
             </div>
             <div class="card">
-                👥
-                <h2 id="membersCount">20</h2>
+                <i class="fa-solid fa-users"></i>
+                <h2 id="membersCount">0</h2>
                 <span>Members</span>
             </div>
         </section>
@@ -52,10 +52,10 @@
             <!-- QUICK ACTIONS -->
             <div class="quick-actions">
                 <h3>Quick Actions</h3>
-                <button id="openModal">➕ Post News</button>
-                <button id="createEvent">➕ Add Schedule</button>
-                <button id="openModalLive">📡 Post Live</button>
-                <button id="openModalOrdinance">📜 Create Ordinance</button>
+                <button data-page="news"><i class="fa-regular fa-newspaper"></i> Post News</button>
+                <button data-page="events"><i class="fa-regular fa-calendar"></i> Add Schedule</button>
+                <button data-page="live"><i class="fa-solid fa-video"></i> Post Live</button>
+                <button data-page="ordinance"><i class="fa-solid fa-gavel"></i> Create Ordinance</button>
             </div>
 
             <!-- SYSTEM STATUS -->
@@ -72,11 +72,7 @@
             <!-- RECENT ACTIVITY -->
             <div class="recent-activity">
                 <h3>Recent Activity</h3>
-                <ul>
-                    <li>📰 News added: Barangay Cleanup Drive</li>
-                    <li>📅 Event updated: Health Seminar</li>
-                    <li>📡 Live scheduled: Council Meeting</li>
-                </ul>
+                <ul id="recentActivityList"></ul>
             </div>
 
         </section>

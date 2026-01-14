@@ -1,5 +1,12 @@
 /*start script for news page modal*/
-document.addEventListener("DOMContentLoaded", loadNews);
+document.addEventListener("DOMContentLoaded", () => {
+    loadNews();
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("openModal") === "true") {
+        openNewsModal();
+    }
+});
 
 const modal = document.getElementById("newsModal");
 const openModalBtn = document.getElementById("openModal");
@@ -17,12 +24,15 @@ async function loadNews() {
 }
 
 /* Modal controls */
-openModalBtn.onclick = () =>{
+function openNewsModal() {
     form.reset();
     document.getElementById("newsId").value = "";
     modalTitle.textContent = "Post News";
     modal.classList.add("show");
-};
+}
+
+/* BUTTON CLICK */
+openModalBtn.onclick = openNewsModal;
 
 closeModalBtns.forEach(btn => {
     btn.onclick = () => modal.classList.remove("show");
@@ -105,3 +115,4 @@ async function deleteNews(id) {
     loadNews();
 }
 /*end script for news page modal*/
+

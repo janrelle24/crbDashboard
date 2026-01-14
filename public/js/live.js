@@ -1,12 +1,20 @@
 /*start script for live page */
-document.addEventListener("DOMContentLoaded", loadLive);
+document.addEventListener("DOMContentLoaded", () => {
+    loadLive();
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("openModal") === "true") {
+        openLiveModal();
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+});
 
 const liveModal = document.getElementById("liveModal");
-const openModalLive = document.getElementById("openModalLive");
+const openModalLive = document.getElementById("openModal");
 const closeModalBtns = document.querySelectorAll(".close-modal"); 
 const liveTableBody = document.getElementById("liveTableBody");
 const liveForm = document.getElementById("liveForm");
-const modalTitle = document.getElementById("modalTitle");
+const modalTitle = document.getElementById("modalLiveTitle");
 
 let live = [];
 
@@ -20,15 +28,20 @@ async function loadLive() {
     }
 }
 //modal controls
-openModalLive.onclick = () =>{
+function openLiveModal(){
     liveForm.reset();
     document.getElementById("liveId").value = "";
     modalTitle.textContent = "Post Live";
     liveModal.classList.add("show");
-};
+}
+
+
+openModalLive.onclick = openLiveModal;
+
 closeModalBtns.forEach(btn =>{
     btn.onclick = () => liveModal.classList.remove("show");
 });
+
 //render table
 function renderTable(){
     liveTableBody.innerHTML = "";
@@ -97,3 +110,5 @@ async function deleteLive(id) {
     loadLive();
 }
 /*end script for live page */
+window.editLive = editLive;
+window.deleteLive = deleteLive;

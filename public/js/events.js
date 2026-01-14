@@ -234,4 +234,20 @@ document.addEventListener('DOMContentLoaded', function(){
     window.editEvents = editEvents;
     window.deleteEvents = deleteEvents;
 });
+// AUTO OPEN MODAL FROM DASHBOARD
+document.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("openModal") === "true") {
+        const eventsModal = document.getElementById("eventsModal");
+        const eventsForm = document.getElementById("eventsForm");
+
+        if (eventsModal && eventsForm) {
+            eventsForm.reset();
+            document.getElementById("eventsId").value = "";
+            eventsModal.classList.add("show");
+        }
+    }
+});
+
 /* end script for events */

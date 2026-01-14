@@ -1,8 +1,15 @@
 /*start script for ordinance page*/
-document.addEventListener("DOMContentLoaded", loadOrdinance);
+document.addEventListener("DOMContentLoaded", () => {
+    loadOrdinance();
+    
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("openModal") === "true") {
+        openOrdinanceModal();
+    }
+});
 
 const ordinanceModal = document.getElementById("ordinanceModal");
-const openModalOrdinance = document.getElementById("openModalOrdinance");
+const openModalOrdinance = document.getElementById("openModal");
 const closeModalBtns = document.querySelectorAll(".close-modal"); 
 const ordinanceTableBody = document.getElementById("ordinanceTableBody");
 const ordinanceForm = document.getElementById("ordinanceForm");
@@ -14,6 +21,7 @@ async function loadOrdinance() {
     try{
         const res = await fetch("/api/ordinance");
         ordinance = await res.json();
+        console.log("Ordinances loaded:", ordinance);
         renderTable();
     }catch(err){
         console.error("Failed to load ordinance", err);
@@ -21,12 +29,14 @@ async function loadOrdinance() {
 }
 
 //modal controls
-openModalOrdinance.onclick = () =>{
+function openOrdinanceModal(){
     ordinanceForm.reset();
     document.getElementById("ordinanceId").value = "";
     modalTitle.textContent = "Create";
     ordinanceModal.classList.add("show");
-};
+}
+openModalOrdinance.onclick = openOrdinanceModal;
+
 closeModalBtns.forEach(btn =>{
     btn.onclick = () => ordinanceModal.classList.remove("show");
 });
@@ -97,3 +107,5 @@ async function deleteOrdinance(id) {
     loadOrdinance();
 }
 /*end script for ordinance page*/
+window.editOrdinance = editOrdinance;
+window.deleteOrdinance = deleteOrdinance;

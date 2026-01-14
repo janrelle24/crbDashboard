@@ -88,6 +88,15 @@ app.put('/api/news/:id', async (req, res) =>{
         res.status(500).json({ error: "Update failed" });
     }
 });
+//count news
+app.get("/api/news/count", async (req, res) =>{
+    try{
+        const count = await News.countDocuments();
+        res.json({ count });
+    }catch(err){
+        res.status(500).json({ error: "Failed to count news" });
+    }
+});
 /**end script for news**/
 /**start script for events**/
 //save events
@@ -131,6 +140,15 @@ app.delete('/api/events/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to delete event' });
     }
 });
+//count events
+app.get("/api/events/count", async (req, res) =>{
+    try{
+        const count = await Events.countDocuments();
+        res.json({ count });
+    }catch(err){
+        res.status(500).json({ error: "Failed to count events" });
+    }
+});
 /**end script for events**/
 /**start script for ordinance**/
 //save ordinance
@@ -172,6 +190,15 @@ app.delete('/api/ordinance/:id', async (req, res) => {
         res.json({ message: 'Ordinance deleted' });
     } catch (err) {
         res.status(500).json({ error: 'Failed to delete ordinance' });
+    }
+});
+//count ordinance
+app.get("/api/ordinance/count", async (req, res) =>{
+    try{
+        const count = await Ordinance.countDocuments();
+        res.json({ count });
+    }catch(err){
+        res.status(500).json({ error: "Failed to count ordinance" });
     }
 });
 /**end script for ordinance**/
@@ -237,6 +264,15 @@ app.put('/api/members/:id', async (req, res) =>{
         res.status(500).json({ error: "Update failed" });
     }
 });
+//count members
+app.get("/api/members/count", async (req, res) =>{
+    try{
+        const count = await Members.countDocuments();
+        res.json({ count });
+    }catch(err){
+        res.status(500).json({ error: "Failed to count members" });
+    }
+});
 /**end script for members**/
 /**start script for live**/
 //save live
@@ -280,7 +316,45 @@ app.delete('/api/live/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to delete live' });
     }
 });
+//count live
+app.get("/api/live/count", async (req, res) =>{
+    try{
+        const count = await Live.countDocuments();
+        res.json({ count });
+    }catch(err){
+        res.status(500).json({ error: "Failed to count live" });
+    }
+});
 /**end script for live**/
+// recent activities
+app.get("/api/recent-activity", async (req, res) => {
+    try {
+        const news = await News.find().sort({ createdAt: -1 }).limit(5);
+        const events = await Events.find().sort({ createdAt: -1 }).limit(5);
+        const live = await Live.find().sort({ createdAt: -1 }).limit(5);
+        const ordinances = await Ordinance.find().sort({ createdAt: -1 }).limit(5);
+        const members = await Members.find().sort({ createdAt: -1 }).limit(5);
+
+        // Combine into a single array with type & date
+        let activities = [];
+
+        news.forEach(n => activities.push({ type: "news", message: n.title, date: n.createdAt }));
+        events.forEach(e => activities.push({ type: "event", message: e.title, date: e.createdAt }));
+        live.forEach(l => activities.push({ type: "live", message: l.title, date: l.createdAt }));
+        ordinances.forEach(o => activities.push({ type: "ordinance", message: o.title, date: o.createdAt }));
+        members.forEach(m => activities.push({ type: "member", message: m.name, date: m.createdAt }));
+
+        // Sort by newest first
+        activities.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        // Send top 4
+        res.json(activities.slice(0, 4));
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch recent activities" });
+    }
+});
+
 //start server
 app.listen(PORT, () =>{
     console.log(`Server running at http://localhost:${PORT}`);
