@@ -61,6 +61,10 @@ app.post("/api/register", async (req, res) => {
     try {
         const { username, password } = req.body;
 
+        if (!username || !password) {
+            return res.status(400).json({ message: "All fields required" });
+        }
+
         if (password.length < 10) {
             return res.status(400).json({ message: "Password too short" });
         }
@@ -79,6 +83,11 @@ app.post("/api/register", async (req, res) => {
 
         res.json({ message: "User registered successfully" });
     } catch (err) {
+
+        if (err.code === 11000) {
+            return res.status(400).json({ message: "Username already exists" });
+        }
+        console.error(err);
         res.status(500).json({ error: "Registration failed" });
     }
 });
@@ -108,7 +117,11 @@ app.post("/api/login", async (req, res) => {
         res.status(500).json({ error: "Login failed" });
     }
 });
-
+//logout
+app.post("/api/logout", auth, (req, res) => {
+    // For JWT, logout is handled on client side by deleting the token
+    res.json({ message: "Logged out successfully" });
+});
 /**start script for news**/
 // save news
 app.post('/api/news', auth, upload.single("image"), async (req, res) =>{

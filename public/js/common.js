@@ -23,13 +23,11 @@ function highlightActiveNav(){
     if (navLink) navLink.classList.add('active');
 }
 loadLayout();
-
-document.addEventListener("DOMContentLoaded", () => {
-    const btn = document.getElementById("logoutBtn");
-    if (!btn) return;
-
-    btn.onclick = () => {
+//logout functionality
+document.addEventListener("click", (e) => {
+    if (e.target.closest("#logoutBtn")) {
+        e.preventDefault();
         localStorage.removeItem("token");
         window.location.href = "login.html";
-    };
+    }
 });

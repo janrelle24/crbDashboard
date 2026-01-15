@@ -2,7 +2,7 @@
 function initSidebar() {
     const sidebar = document.getElementById("sidebar");
     const hamburger = document.querySelector(".hamburger");
-    const toggles = document.querySelectorAll("#toggleSidebar");
+    const toggles = document.querySelectorAll(".toggle-sidebar");
 
     if (!sidebar || !hamburger) return;
 
