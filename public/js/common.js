@@ -13,6 +13,7 @@ async function loadLayout(){
     
     initSidebar();
     highlightActiveNav();
+    initLogout();
 }
 
 function highlightActiveNav(){
@@ -22,12 +23,21 @@ function highlightActiveNav(){
     const navLink = document.querySelector(`.nav-link[data-nav="${name}"]`);
     if (navLink) navLink.classList.add('active');
 }
-loadLayout();
-//logout functionality
-document.addEventListener("click", (e) => {
-    if (e.target.closest("#logoutBtn")) {
-        e.preventDefault();
-        localStorage.removeItem("token");
-        window.location.href = "login.html";
+//function handles logout
+function initLogout(){
+    const logoutBtn = document.getElementById("logoutBtn");
+    if(logoutBtn){
+        logoutBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (confirm("Are you sure you want to log out?")) {
+                localStorage.removeItem("token");
+                window.location.href = "/login.html";
+            }
+        });
+    }else{
+        console.warn("Logout button not found");
     }
-});
+}
+
+loadLayout();
+

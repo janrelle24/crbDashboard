@@ -10,6 +10,11 @@ if(loginForm){
         const username = document.getElementById("username").value.trim();
         const password = document.getElementById("password").value.trim();
 
+        if (!username || !password) {
+            alert("Please enter both email and password.");
+            return;
+        }
+        
         try{
             const res = await fetch("/api/login", {
                 method: "POST",
