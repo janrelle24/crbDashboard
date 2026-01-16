@@ -19,9 +19,10 @@ let ordinance = [];
 
 async function loadOrdinance() {
     try{
-        const res = await fetch("/api/ordinance");
+        const res = await fetch("/api/ordinance", {
+            headers: authHeaders()
+        });
         ordinance = await res.json();
-        console.log("Ordinances loaded:", ordinance);
         renderTable();
     }catch(err){
         console.error("Failed to load ordinance", err);
@@ -70,7 +71,7 @@ ordinanceForm.addEventListener("submit", async e =>{
 
     try{
         await fetch(url, {
-            method: "POST",
+            method,
             headers: authHeaders({ "Content-Type": "application/json" }),
             body: JSON.stringify({ title, content })
         });
@@ -101,7 +102,8 @@ async function deleteOrdinance(id) {
     if (!confirm("Delete this ordinance?")) return;
 
     await fetch(`/api/ordinance/${id}`, {
-        method: "DELETE"
+        method: "DELETE",
+        headers: authHeaders()
     });
     
     loadOrdinance();

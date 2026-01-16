@@ -20,7 +20,9 @@ let live = [];
 
 async function loadLive() {
     try{
-        const res = await fetch("/api/live");
+        const res = await fetch("/api/live", {
+            headers: authHeaders()
+        });
         live = await res.json();
         renderTable();
     }catch(err){
@@ -72,7 +74,7 @@ liveForm.addEventListener("submit", async e =>{
 
     try{
         await fetch(url, {
-            method: "POST",
+            method,
             headers: authHeaders({ "Content-Type": "application/json" }),
             body: JSON.stringify({ title, embedUrl, status })
         });
@@ -99,12 +101,13 @@ function editLive(id) {
     modalTitle.textContent = "Edit";
     liveModal.classList.add("show");
 }
-//delete ordinance
+//delete live
 async function deleteLive(id) {
     if (!confirm("Delete this live?")) return;
 
     await fetch(`/api/live/${id}`, {
-        method: "DELETE"
+        method: "DELETE",
+        headers: authHeaders()
     });
     
     loadLive();

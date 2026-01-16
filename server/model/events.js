@@ -6,7 +6,8 @@ const EventsSchema = mongoose.Schema({
     time: { type: String, required: true},
     place: { type: String, required: true},
     agenda: { type: String, required: true},
-    dateNow: { type: Date, default: Date.now }
-});
+    dateNow: { type: Date, default: Date.now },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+}, { timestamps: true });
 
 module.exports = mongoose.model('Events', EventsSchema);

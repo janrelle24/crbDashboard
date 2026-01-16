@@ -7,7 +7,8 @@ const MembersSchema = mongoose.Schema({
     birthDate: { type: Date, required: true},
     education: { type: String, required: true },
     achievements: { type: String, required: true },
-    date: { type: Date, default: Date.now }
-});
+    date: { type: Date, default: Date.now },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+}, { timestamps: true });
 
 module.exports = mongoose.model('Members', MembersSchema);

@@ -41,7 +41,9 @@ document.addEventListener('DOMContentLoaded', function(){
 
     async function loadEvents() {
         try{
-            const res = await fetch("/api/events");
+            const res = await fetch("/api/events", {
+                headers: authHeaders()
+            });
             events = await res.json();
 
             //build set of event dates
@@ -94,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
         try{
             await fetch(url, {
-                method: "POST",
+                method,
                 headers: authHeaders({ "Content-Type": "application/json" }),
                 body: JSON.stringify({ title, date, time, place, agenda })
             });
@@ -130,7 +132,8 @@ document.addEventListener('DOMContentLoaded', function(){
         if (!confirm("Delete this events?")) return;
     
         await fetch(`/api/events/${id}`, {
-            method: "DELETE"
+            method: "DELETE",
+            headers: authHeaders()
         });
         
         loadEvents();

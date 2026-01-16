@@ -129,19 +129,21 @@ app.post('/api/news', auth, upload.single("image"), async (req, res) =>{
         const news = await News.create({
             image: req.file ? `/uploads/${req.file.filename}` : "",
             title: req.body.title,
-            content: req.body.content
+            content: req.body.content,
+            createdBy: req.user.id
         });
         res.status(201).json(news);
     }
     catch(err){
+        console.error(err);
         res.status(500).json({ error: 'Failed to save news item' });
     }
 });
 
 //render news
-app.get('/api/news', async (req, res) =>{
+app.get('/api/news', auth, async (req, res) =>{
     try{
-        const news = await News.find().sort({ date: -1 });
+        const news = await News.find({ createdBy: req.user.id }).sort({ createdAt: -1 });
         res.json(news);
     }catch(err){
         res.status(500).json({ error: 'Failed to fetch news items' });
@@ -150,14 +152,15 @@ app.get('/api/news', async (req, res) =>{
 //delete news
 app.delete('/api/news/:id', auth, async (req, res) =>{
     try{
-        await News.findByIdAndDelete(req.params.id);
+        const deleted = await News.findOneAndDelete({ _id: req.params.id, createdBy: req.user.id });
+        if (!deleted) return res.status(404).json({ message: "News not found or unauthorized" });
         res.json({ message: "News deleted" });
     }catch(err){
         res.status(500).json({ error: 'Failed to delete news item' });
     }
 });
 //update news
-app.put('/api/news/:id', auth, async (req, res) =>{
+app.put('/api/news/:id', auth, upload.single("image"), async (req, res) =>{
     try{
         const updateData = {
             title: req.body.title,
@@ -168,20 +171,21 @@ app.put('/api/news/:id', auth, async (req, res) =>{
             updateData.image = `/uploads/${req.file.filename}`;
         }
 
-        const updated = await News.findByIdAndUpdate(
-            req.params.id,
+        const updated = await News.findOneAndUpdate(
+            { _id: req.params.id, createdBy: req.user.id },
             updateData,
             { new: true }
         );
+        if (!updated) return res.status(404).json({ message: "News not found or unauthorized" });
         res.json(updated);
     }catch(err){
         res.status(500).json({ error: "Update failed" });
     }
 });
 //count news
-app.get("/api/news/count", async (req, res) =>{
+app.get("/api/news/count", auth, async (req, res) =>{
     try{
-        const count = await News.countDocuments();
+        const count = await News.countDocuments({ createdBy: req.user.id });
         res.json({ count });
     }catch(err){
         res.status(500).json({ error: "Failed to count news" });
@@ -192,7 +196,7 @@ app.get("/api/news/count", async (req, res) =>{
 //save events
 app.post('/api/events', auth, async (req, res) =>{
     try{
-        const event = await Events.create(req.body);
+        const event = await Events.create({ ...req.body, createdBy: req.user.id });
         res.status(201).json(event);
     }
     catch(err){
@@ -200,9 +204,9 @@ app.post('/api/events', auth, async (req, res) =>{
     }
 });
 //render events
-app.get('/api/events', async (req, res) =>{
+app.get('/api/events', auth, async (req, res) =>{
     try{
-        const events = await Events.find().sort({ date: -1 });
+        const events = await Events.find({ createdBy: req.user.id }).sort({ date: -1 });
         res.json(events);
     }catch(err){
         res.status(500).json({ error: 'Failed to fetch events items' });
@@ -211,11 +215,12 @@ app.get('/api/events', async (req, res) =>{
 //update
 app.put('/api/events/:id', auth, async (req, res) => {
     try {
-        const updated = await Events.findByIdAndUpdate(
-            req.params.id,
+        const updated = await Events.findOneAndUpdate(
+            { _id: req.params.id, createdBy: req.user.id },
             req.body,
             { new: true }
         );
+        if (!updated) return res.status(404).json({ message: "Event not found or unauthorized" });
         res.json(updated);
     } catch (err) {
         res.status(500).json({ error: 'Failed to update event' });
@@ -224,16 +229,17 @@ app.put('/api/events/:id', auth, async (req, res) => {
 //delete
 app.delete('/api/events/:id', auth, async (req, res) => {
     try {
-        await Events.findByIdAndDelete(req.params.id);
+        const deleted = await Events.findOneAndDelete({ _id: req.params.id, createdBy: req.user.id });
+        if (!deleted) return res.status(404).json({ message: "Event not found or unauthorized" });
         res.json({ message: 'Event deleted' });
     } catch (err) {
         res.status(500).json({ error: 'Failed to delete event' });
     }
 });
 //count events
-app.get("/api/events/count", async (req, res) =>{
+app.get("/api/events/count", auth, async (req, res) =>{
     try{
-        const count = await Events.countDocuments();
+        const count = await Events.countDocuments({ createdBy: req.user.id });
         res.json({ count });
     }catch(err){
         res.status(500).json({ error: "Failed to count events" });
@@ -244,7 +250,7 @@ app.get("/api/events/count", async (req, res) =>{
 //save ordinance
 app.post('/api/ordinance', auth, async (req, res) =>{
     try{
-        const ordinance = await Ordinance.create(req.body);
+        const ordinance = await Ordinance.create({ ...req.body, createdBy: req.user.id });
         res.status(201).json(ordinance);
     }
     catch(err){
@@ -252,9 +258,9 @@ app.post('/api/ordinance', auth, async (req, res) =>{
     }
 });
 //render ordinance
-app.get('/api/ordinance', async (req, res) =>{
+app.get('/api/ordinance', auth, async (req, res) =>{
     try{
-        const ordinance = await Ordinance.find().sort({ date: -1 });
+        const ordinance = await Ordinance.find({ createdBy: req.user.id }).sort({ date: -1 });
         res.json(ordinance);
     }catch(err){
         res.status(500).json({ error: 'Failed to fetch ordinance items' });
@@ -263,11 +269,12 @@ app.get('/api/ordinance', async (req, res) =>{
 //update
 app.put('/api/ordinance/:id', auth, async (req, res) => {
     try {
-        const updated = await Ordinance.findByIdAndUpdate(
-            req.params.id,
+        const updated = await Ordinance.findOneAndUpdate(
+            { _id: req.params.id, createdBy: req.user.id },
             req.body,
             { new: true }
         );
+        if (!updated) return res.status(404).json({ message: "Ordinance not found or unauthorized" });
         res.json(updated);
     } catch (err) {
         res.status(500).json({ error: 'Failed to update ordinance' });
@@ -276,16 +283,17 @@ app.put('/api/ordinance/:id', auth, async (req, res) => {
 //delete
 app.delete('/api/ordinance/:id', auth, async (req, res) => {
     try {
-        await Ordinance.findByIdAndDelete(req.params.id);
+        const deleted = await Ordinance.findOneAndDelete({ _id: req.params.id, createdBy: req.user.id });
+        if (!deleted) return res.status(404).json({ message: "Ordinance not found or unauthorized" });
         res.json({ message: 'Ordinance deleted' });
     } catch (err) {
         res.status(500).json({ error: 'Failed to delete ordinance' });
     }
 });
 //count ordinance
-app.get("/api/ordinance/count", async (req, res) =>{
+app.get("/api/ordinance/count", auth, async (req, res) =>{
     try{
-        const count = await Ordinance.countDocuments();
+        const count = await Ordinance.countDocuments({ createdBy: req.user.id });
         res.json({ count });
     }catch(err){
         res.status(500).json({ error: "Failed to count ordinance" });
@@ -302,7 +310,8 @@ app.post('/api/members', auth, upload.single("image"), async (req, res) =>{
             position: req.body.position,
             birthDate: req.body.birthDate,
             education: req.body.education,
-            achievements: req.body.achievements
+            achievements: req.body.achievements,
+            createdBy: req.user.id
         });
         res.status(201).json(members);
     }
@@ -312,9 +321,9 @@ app.post('/api/members', auth, upload.single("image"), async (req, res) =>{
 });
 
 //render members
-app.get('/api/members', async (req, res) =>{
+app.get('/api/members', auth, async (req, res) =>{
     try{
-        const members = await Members.find().sort({ date: -1 });
+        const members = await Members.find({ createdBy: req.user.id }).sort({ date: -1 });
         res.json(members);
     }catch(err){
         res.status(500).json({ error: 'Failed to fetch members items' });
@@ -323,14 +332,15 @@ app.get('/api/members', async (req, res) =>{
 //delete members
 app.delete('/api/members/:id', auth, async (req, res) =>{
     try{
-        await Members.findByIdAndDelete(req.params.id);
+        const deleted = await Members.findOneAndDelete({ _id: req.params.id, createdBy: req.user.id });
+        if (!deleted) return res.status(404).json({ message: "Members not found or unauthorized" });
         res.json({ message: "Members deleted" });
     }catch(err){
         res.status(500).json({ error: 'Failed to delete members item' });
     }
 });
 //update members
-app.put('/api/members/:id', auth, async (req, res) =>{
+app.put('/api/members/:id', auth, upload.single("image"), async (req, res) =>{
     try{
         const updateData = {
             name: req.body.name,
@@ -344,20 +354,21 @@ app.put('/api/members/:id', auth, async (req, res) =>{
             updateData.image = `/uploads/${req.file.filename}`;
         }
 
-        const updated = await Members.findByIdAndUpdate(
-            req.params.id,
+        const updated = await Members.findOneAndUpdate(
+            { _id: req.params.id, createdBy: req.user.id },
             updateData,
             { new: true }
         );
+        if (!updated) return res.status(404).json({ message: "Members not found or unauthorized" });
         res.json(updated);
     }catch(err){
         res.status(500).json({ error: "Update failed" });
     }
 });
 //count members
-app.get("/api/members/count", async (req, res) =>{
+app.get("/api/members/count", auth, async (req, res) =>{
     try{
-        const count = await Members.countDocuments();
+        const count = await Members.countDocuments({ createdBy: req.user.id });
         res.json({ count });
     }catch(err){
         res.status(500).json({ error: "Failed to count members" });
@@ -368,7 +379,7 @@ app.get("/api/members/count", async (req, res) =>{
 //save live
 app.post('/api/live', auth, async (req, res) =>{
     try{
-        const live = await Live.create(req.body);
+        const live = await Live.create({ ...req.body, createdBy: req.user.id });
         res.status(201).json(live);
     }
     catch(err){
@@ -376,9 +387,9 @@ app.post('/api/live', auth, async (req, res) =>{
     }
 });
 //render live
-app.get('/api/live', async (req, res) =>{
+app.get('/api/live', auth, async (req, res) =>{
     try{
-        const live = await Live.find().sort({ date: -1 });
+        const live = await Live.find({ createdBy: req.user.id }).sort({ date: -1 });
         res.json(live);
     }catch(err){
         res.status(500).json({ error: 'Failed to fetch live items' });
@@ -387,12 +398,13 @@ app.get('/api/live', async (req, res) =>{
 //update
 app.put('/api/live/:id', auth, async (req, res) => {
     try {
-        const updated = await Live.findByIdAndUpdate(
-            req.params.id,
+        const updated = await Live.findOneAndUpdate(
+            { _id: req.params.id, createdBy: req.user.id },
             req.body,
             { new: true }
         );
         res.json(updated);
+        if (!updated) return res.status(404).json({ message: "Live not found or unauthorized" });
     } catch (err) {
         res.status(500).json({ error: 'Failed to update live' });
     }
@@ -400,16 +412,17 @@ app.put('/api/live/:id', auth, async (req, res) => {
 //delete
 app.delete('/api/live/:id', auth, async (req, res) => {
     try {
-        await Live.findByIdAndDelete(req.params.id);
+        const deleted = await Live.findOneAndDelete({ _id: req.params.id, createdBy: req.user.id });
+        if (!deleted) return res.status(404).json({ message: "Live not found or unauthorized" });
         res.json({ message: 'Live deleted' });
     } catch (err) {
         res.status(500).json({ error: 'Failed to delete live' });
     }
 });
 //count live
-app.get("/api/live/count", async (req, res) =>{
+app.get("/api/live/count", auth, async (req, res) =>{
     try{
-        const count = await Live.countDocuments();
+        const count = await Live.countDocuments({ createdBy: req.user.id });
         res.json({ count });
     }catch(err){
         res.status(500).json({ error: "Failed to count live" });
@@ -417,7 +430,7 @@ app.get("/api/live/count", async (req, res) =>{
 });
 /**end script for live**/
 // recent activities
-app.get("/api/recent-activity", async (req, res) => {
+app.get("/api/recent-activity", auth, async (req, res) => {
     try {
         const news = await News.find().sort({ createdAt: -1 }).limit(5);
         const events = await Events.find().sort({ createdAt: -1 }).limit(5);
@@ -432,7 +445,7 @@ app.get("/api/recent-activity", async (req, res) => {
         events.forEach(e => activities.push({ type: "event", message: e.title, date: e.createdAt }));
         live.forEach(l => activities.push({ type: "live", message: l.title, date: l.createdAt }));
         ordinances.forEach(o => activities.push({ type: "ordinance", message: o.title, date: o.createdAt }));
-        members.forEach(m => activities.push({ type: "member", message: m.name, date: m.createdAt }));
+        members.forEach(m => activities.push({ type: "members", message: m.name, date: m.createdAt }));
 
         // Sort by newest first
         activities.sort((a, b) => new Date(b.date) - new Date(a.date));

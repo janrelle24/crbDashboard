@@ -69,7 +69,7 @@ if(registerForm){
                 registerError.textContent = data.message || "Registration failed";
                 return;
             }
-
+            
             alert("Registered successfully. Please login.");
             window.location.href = "login.html";
 

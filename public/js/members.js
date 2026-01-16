@@ -1,8 +1,14 @@
 /*start script for members page */
-document.addEventListener("DOMContentLoaded", loadMembers);
+document.addEventListener("DOMContentLoaded", () => {
+    loadMembers();
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("openModal") === "true") {
+        openMembersModal();
+    }
+});
 
 const membersModal = document.getElementById("membersModal");
-const openModalMembers = document.getElementById("openModalMembers");
+const openModalMembers = document.getElementById("openModal");
 const closeModalBtns = document.querySelectorAll(".close-modal");
 const membersTableBody = document.getElementById("membersTableBody");
 const membersForm = document.getElementById("membersForm");
@@ -11,17 +17,22 @@ const modalTitle = document.getElementById("modalTitle");
 let members = [];
 
 async function loadMembers() {
-    const res = await fetch("/api/members");
+    const res = await fetch("/api/members", {
+        headers: authHeaders()
+    });
     members = await res.json();
     renderTable();
 }
 //modal controls
-openModalMembers.onclick = () =>{
+
+function openMembersModal() {
     membersForm.reset();
     document.getElementById("membersId").value = "";
-    modalTitle.textContent = "Add Members";
+    modalTitle.textContent = "add Members";
     membersModal.classList.add("show");
-};
+}
+openModalMembers.onclick = openMembersModal;
+
 closeModalBtns.forEach(btn => {
     btn.onclick = () => membersModal.classList.remove("show");
 });
@@ -32,7 +43,7 @@ function renderTable(){
     members.forEach(item => {
         membersTableBody.innerHTML += `
             <tr>
-                <td><img src="${item.image}" alt="news image" style="width:80px; height:auto;"></td>
+                <td><img src="${item.image}" alt="members image" style="width:80px; height:auto;"></td>
                 <td>${item.name}</td>
                 <td>${item.position}</td>
                 <td>${item.birthDate}</td>
@@ -72,8 +83,8 @@ membersForm.addEventListener("submit", async e => {
     const url = id ? `/api/members/${id}` : "/api/members";
     try{
         await fetch(url, {
-            method: "POST",
-            headers: authHeaders(),
+            method,
+            headers: { Authorization: "Bearer " + localStorage.getItem("token") },
             body: formData
         });
     
@@ -108,7 +119,8 @@ async function deleteMembers(id) {
     if (!confirm("Delete this members?")) return;
 
     await fetch(`/api/members/${id}`, {
-        method: "DELETE"
+        method: "DELETE",
+        headers: authHeaders()
     });
     
     loadMembers();

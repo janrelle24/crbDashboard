@@ -18,7 +18,10 @@ const modalTitle = document.getElementById("modalTitle");
 let news = [];
 
 async function loadNews() {
-    const res = await fetch("/api/news");
+    const res = await fetch("/api/news", {
+        headers: authHeaders()
+    });
+        
     news = await res.json();
     renderTable();
 }
@@ -67,6 +70,7 @@ form.addEventListener("submit", async e => {
     const content = document.getElementById("content").value;
 
     const formData = new FormData();
+    //formData.append("image", fileInput.files[0]);
     formData.append("title", title);
     formData.append("content", content);
 
@@ -77,8 +81,8 @@ form.addEventListener("submit", async e => {
     const url = id ? `/api/news/${id}` : "/api/news";
     try{
         await fetch(url, {
-            method: "POST",
-            headers: authHeaders(),
+            method, 
+            headers: { Authorization: "Bearer " + localStorage.getItem("token") },
             body: formData
         });
     
@@ -110,7 +114,8 @@ async function deleteNews(id) {
     if (!confirm("Delete this news?")) return;
 
     await fetch(`/api/news/${id}`, {
-        method: "DELETE"
+        method: "DELETE",
+        headers: authHeaders()
     });
     
     loadNews();
