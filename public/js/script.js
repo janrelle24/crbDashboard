@@ -1,4 +1,5 @@
 /*start script for sidebar hamburger btn*/
+document.addEventListener("DOMContentLoaded", initSidebar);
 function initSidebar() {
     const sidebar = document.getElementById("sidebar");
     const hamburger = document.querySelector(".hamburger");
@@ -9,12 +10,16 @@ function initSidebar() {
     toggles.forEach(btn => {
         btn.addEventListener("click", () => {
             sidebar.classList.toggle("closed");
-    
+            
+            /*
             if (sidebar.classList.contains("closed")) {
                 hamburger.style.display = "block";
             } else {
                 hamburger.style.display = "none";
-            }
+            }*/
+            hamburger.style.display = sidebar.classList.contains("closed")
+                ? "block"
+                : "none";
         });
     });
 }
