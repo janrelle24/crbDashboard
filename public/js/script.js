@@ -31,12 +31,17 @@ async function loadDashboardCounts(){
             ordinanceRes,
             membersRes
         ] = await Promise.all([
-            fetch("/api/news/count"),
-            fetch("/api/events/count"),
-            fetch("/api/live/count"),
-            fetch("/api/ordinance/count"),
-            fetch("/api/members/count")
+            fetch("/api/news/count", { headers: authHeaders() }),
+            fetch("/api/events/count", { headers: authHeaders() }),
+            fetch("/api/live/count", { headers: authHeaders() }),
+            fetch("/api/ordinance/count", { headers: authHeaders() }),
+            fetch("/api/members/count", { headers: authHeaders() })
         ]);
+
+        if (!newsRes.ok || !eventsRes.ok || !liveRes.ok || !ordinanceRes.ok || !membersRes.ok) {
+            console.error("One or more count requests failed.");
+            return;
+        }
 
         const news = await newsRes.json();
         const events = await eventsRes.json();
@@ -44,11 +49,11 @@ async function loadDashboardCounts(){
         const ordinance = await ordinanceRes.json();
         const members = await membersRes.json();
 
-        document.getElementById("newsCount").textContent = news.count;
-        document.getElementById("eventsCount").textContent = events.count;
-        document.getElementById("liveCount").textContent = live.count;
-        document.getElementById("ordinanceCount").textContent = ordinance.count;
-        document.getElementById("membersCount").textContent = members.count;
+        document.getElementById("newsCount").textContent = news.count ?? 0;
+        document.getElementById("eventsCount").textContent = events.count ?? 0;
+        document.getElementById("liveCount").textContent = live.count ?? 0;
+        document.getElementById("ordinanceCount").textContent = ordinance.count ?? 0;
+        document.getElementById("membersCount").textContent = members.count ?? 0;
 
     }catch(err){
         console.error("Failed to load dashboard counts", err);
@@ -69,13 +74,24 @@ document.addEventListener("DOMContentLoaded", () => {
 /**recent activities */
 async function loadRecentActivity() {
     const list = document.getElementById("recentActivityList");
+    if (!list) return;
+
     list.innerHTML = "<li>Loading...</li>";
 
     try {
-        const res = await fetch("/api/recent-activity");
+        const res = await fetch("/api/recent-activity", { headers: authHeaders() });
+
+        if(!res.ok){
+            throw new Error("Unauthorized or failed to load recent activity");
+        }
         const activities = await res.json();
 
         list.innerHTML = ""; // Clear loading
+
+        if (!activities.length) {
+            list.innerHTML = "<li>No recent activity</li>";
+            return;
+        }
 
         activities.forEach(act => {
             const li = document.createElement("li");
@@ -85,21 +101,38 @@ async function loadRecentActivity() {
                 case "event": li.textContent = `📅 ${act.message}`; break;
                 case "live": li.textContent = `📡 ${act.message}`; break;
                 case "ordinance": li.textContent = `📜 ${act.message}`; break;
-                case "member": li.textContent = `👥 ${act.message}`; break;
+                case "members": li.textContent = `👥 ${act.message}`; break;
                 default: li.textContent = act.message;
             }
 
             list.appendChild(li);
         });
 
-        if (activities.length === 0) {
-            list.innerHTML = "<li>No recent activity</li>";
-        }
     } catch (err) {
         console.error("Failed to load recent activity", err);
         list.innerHTML = "<li>Failed to load recent activity</li>";
     }
 }
+// Decode JWT to extract username
+function getUsernameFromToken() {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
+
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return payload.username || payload.user || "Administrator";
+    } catch {
+        return "Administrator";
+    }
+}
+//Display logged-in username
+document.addEventListener("DOMContentLoaded", () => {
+    const welcomeText = document.getElementById("welcomeText");
+    const username = getUsernameFromToken();
+    if (welcomeText && username) {
+        welcomeText.textContent = `Welcome, ${username}`;
+    }
+});
 
 document.addEventListener("DOMContentLoaded", loadRecentActivity);
 

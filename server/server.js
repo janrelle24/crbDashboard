@@ -432,11 +432,14 @@ app.get("/api/live/count", auth, async (req, res) =>{
 // recent activities
 app.get("/api/recent-activity", auth, async (req, res) => {
     try {
-        const news = await News.find().sort({ createdAt: -1 }).limit(5);
-        const events = await Events.find().sort({ createdAt: -1 }).limit(5);
-        const live = await Live.find().sort({ createdAt: -1 }).limit(5);
-        const ordinances = await Ordinance.find().sort({ createdAt: -1 }).limit(5);
-        const members = await Members.find().sort({ createdAt: -1 }).limit(5);
+        //from auth middleware
+        const userId = req.user.id;
+
+        const news = await News.find({ createdBy: userId }).sort({ createdAt: -1 }).limit(5);
+        const events = await Events.find( { createdBy: userId } ).sort({ createdAt: -1 }).limit(5);
+        const live = await Live.find( { createdBy: userId } ).sort({ createdAt: -1 }).limit(5);
+        const ordinances = await Ordinance.find( { createdBy: userId } ).sort({ createdAt: -1 }).limit(5);
+        const members = await Members.find( { createdBy: userId } ).sort({ createdAt: -1 }).limit(5);
 
         // Combine into a single array with type & date
         let activities = [];

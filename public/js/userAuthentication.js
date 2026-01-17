@@ -28,8 +28,12 @@ if(loginForm){
                 errorText.textContent = data.message || "Invalid credentials";
                 return;
             }
-
+            //Save token + username to localStorage
             localStorage.setItem("token", data.token);
+            if(data.username){
+                localStorage.setItem("username", data.username);
+            }
+            
             window.location.href = "index.html";
 
         }catch(err){
