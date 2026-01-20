@@ -5,6 +5,8 @@ const path = require("path");
 //Load env + auth deps
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+//cors for cross-origin requests
+const cors = require("cors");
 
 const connectDB = require("./config/db");
 
@@ -20,7 +22,11 @@ const PORT = 3000;
 
 /* Connect Database */
 connectDB();
-
+// Enable CORS
+app.use(cors({
+    origin: "*", // allow public site
+    methods: ["GET"],
+}));
 // Middleware to parse JSON bodies
 app.use(express.json());
 // Middleware to serve static files
@@ -190,6 +196,19 @@ app.get("/api/news/count", auth, async (req, res) =>{
     }catch(err){
         res.status(500).json({ error: "Failed to count news" });
     }
+});
+//serve images
+app.use("/uploads", express.static("uploads"));
+
+//public news
+app.get("/api/public/news", async (req, res) =>{
+    try{
+        const news = await News.find().sort({ createdAt: -1 });
+    res.json(news);
+    }catch(err){
+        res.status(500).json({ error: "Failed to fetch public news" });
+    }
+    
 });
 /**end script for news**/
 /**start script for events**/
