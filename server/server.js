@@ -264,6 +264,15 @@ app.get("/api/events/count", auth, async (req, res) =>{
         res.status(500).json({ error: "Failed to count events" });
     }
 });
+//public events
+app.get("/api/public/events", async (req, res) =>{
+    try{
+        const events = await Events.find().sort({ createdAt: -1 });
+        res.json(events);
+    }catch(err){
+        res.status(500).json({ error: "Failed to fetch public events" });
+    }
+});
 /**end script for events**/
 /**start script for ordinance**/
 //save ordinance
@@ -318,6 +327,17 @@ app.get("/api/ordinance/count", auth, async (req, res) =>{
         res.status(500).json({ error: "Failed to count ordinance" });
     }
 });
+//public ordinance
+app.get("/api/public/ordinance", async (req, res) =>{
+    try{
+        const ordinance = await Ordinance.find().sort({ createdAt: -1 });
+        res.json(ordinance);
+    }catch(err){
+        res.status(500).json({ error: "Failed to fetch public ordinance" });
+    }
+    
+});
+
 /**end script for ordinance**/
 /**start script for members**/
 // save members
@@ -391,6 +411,15 @@ app.get("/api/members/count", auth, async (req, res) =>{
         res.json({ count });
     }catch(err){
         res.status(500).json({ error: "Failed to count members" });
+    }
+});
+//public members
+app.get("/api/public/members", async (req, res) =>{
+    try{
+        const members = await Members.find().sort({ createdAt: -1 });
+        res.json(members);
+    }catch(err){
+        res.status(500).json({ error: "Failed to fetch public members" });
     }
 });
 /**end script for members**/
