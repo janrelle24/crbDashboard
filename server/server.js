@@ -476,6 +476,17 @@ app.get("/api/live/count", auth, async (req, res) =>{
         res.status(500).json({ error: "Failed to count live" });
     }
 });
+//public live
+app.get("/api/public/live", async (req, res) =>{
+    try{
+        const live = await Live.find().sort({ createdAt: -1 });
+        
+        res.json(live);
+    }catch(error){
+        res.status(500).json({ error: "Failed to fetch public live" });
+    }
+});
+
 /**end script for live**/
 // recent activities
 app.get("/api/recent-activity", auth, async (req, res) => {
