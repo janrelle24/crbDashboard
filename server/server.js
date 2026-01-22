@@ -210,6 +210,19 @@ app.get("/api/public/news", async (req, res) =>{
     }
     
 });
+//get single news by id
+app.get("/api/public/news/:id", async (req, res) =>{
+    try{
+        const news = await News.findById(req.params.id);
+        if(!news){
+            return  res.status(404).json({ error: "News item not found" });
+        }
+        res.json(news);
+    }catch(err){
+        console.error(err);
+        res.status(500).json({ err: "Failed to fetch news item" });
+    }
+});
 /**end script for news**/
 /**start script for events**/
 //save events
@@ -336,6 +349,19 @@ app.get("/api/public/ordinance", async (req, res) =>{
         res.status(500).json({ error: "Failed to fetch public ordinance" });
     }
     
+});
+//get single ordinance by id
+app.get("/api/public/ordinance/:id", async (req, res) =>{
+    try{
+        const ordinance = await Ordinance.findById(req.params.id);
+        if(!ordinance){
+            return  res.status(404).json({ error: "Ordinance item not found" });
+        }
+        res.json(ordinance);
+    }catch(err){
+        console.error(err);
+        res.status(500).json({ err: "Failed to fetch news item" });
+    }
 });
 
 /**end script for ordinance**/
