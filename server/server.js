@@ -448,6 +448,20 @@ app.get("/api/public/members", async (req, res) =>{
         res.status(500).json({ error: "Failed to fetch public members" });
     }
 });
+//get single members by id
+app.get("/api/public/members/:id", async (req, res) =>{
+    try{
+        const members = await Members.findById(req.params.id);
+        if(!members){
+            return  res.status(404).json({ error: "Members item not found" });
+        }
+        res.json(members);
+    }catch(err){
+        console.error(err);
+        res.status(500).json({ error: "Members item not found" });
+    }
+});
+
 /**end script for members**/
 /**start script for live**/
 //save live
