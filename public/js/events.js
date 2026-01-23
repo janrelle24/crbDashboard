@@ -53,7 +53,8 @@ document.addEventListener('DOMContentLoaded', function(){
             });
 
 
-            renderTable();
+            renderTable(events);
+            setupSearch();
             renderCalendarEvents(currentDateEvents); // re-render calendar
         }catch(err){
             console.error("Failed to load events", err);
@@ -69,8 +70,13 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     }
     //render table
-    function renderTable(){
+    function renderTable(events){
         eventsTableBody.innerHTML = "";
+
+        if(!events.length){
+            eventsTableBody.innerHTML = `<tr><td colspan="6">No events found.</td></tr>`;
+            return;
+        }
 
         events.forEach(item => {
             eventsTableBody.innerHTML += `
@@ -86,6 +92,18 @@ document.addEventListener('DOMContentLoaded', function(){
                     </td>
                 </tr>
             `;
+        });
+    }
+    //search functionality
+    function setupSearch(){
+        const searchInput = document.getElementById("searchEvents");
+
+        searchInput.addEventListener("input", () =>{
+            const query = searchInput.value.toLowerCase().trim();
+            const filtered = events.filter(item =>
+                item.title.toLowerCase().includes(query)
+            );
+            renderTable(filtered);
         });
     }
     //save events

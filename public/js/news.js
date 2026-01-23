@@ -23,7 +23,8 @@ async function loadNews() {
     });
         
     news = await res.json();
-    renderTable();
+    renderTable(news);
+    setupSearch();
 }
 
 /* Modal controls */
@@ -42,8 +43,13 @@ closeModalBtns.forEach(btn => {
 });
 
 /* Render table */
-function renderTable(){
+function renderTable(news){
     tableBody.innerHTML = "";
+
+    if (!news.length) {
+        tableBody.innerHTML = `<tr><td colspan="5">No news found.</td></tr>`;
+        return;
+    }
 
     news.forEach(item => {
         tableBody.innerHTML += `
@@ -58,6 +64,20 @@ function renderTable(){
                 </td>
             </tr>
         `;
+    });
+}
+/* Search functionality */
+function setupSearch(){
+    const searchInput = document.getElementById("searchNews");
+
+    searchInput.addEventListener("input", () => {
+        const query = searchInput.value.toLowerCase().trim();
+
+        const filtered = news.filter(item =>
+            item.title.toLowerCase().includes(query) 
+        );
+
+        renderTable(filtered);
     });
 }
 /* Save */

@@ -23,7 +23,8 @@ async function loadOrdinance() {
             headers: authHeaders()
         });
         ordinance = await res.json();
-        renderTable();
+        renderTable(ordinance);
+        setupSearch();
     }catch(err){
         console.error("Failed to load ordinance", err);
     }
@@ -42,8 +43,13 @@ closeModalBtns.forEach(btn =>{
     btn.onclick = () => ordinanceModal.classList.remove("show");
 });
 //render table
-function renderTable(){
+function renderTable(ordinance){
     ordinanceTableBody.innerHTML = "";
+
+    if(!ordinance.length){
+        ordinanceTableBody.innerHTML = `<tr><td colspan="4">No ordinance found.</td></tr>`;
+        return;
+    }
     ordinance.forEach(item =>{
         ordinanceTableBody.innerHTML += `
             <tr>
@@ -56,6 +62,20 @@ function renderTable(){
                 </td>
             </tr>
         `;
+    });
+}
+//setup search
+function setupSearch(){
+    const searchInput = document.getElementById("searchOrdinance");
+
+    searchInput.addEventListener("input", () => {
+        const query = searchInput.value.toLowerCase().trim();
+
+        const filtered = ordinance.filter(item =>
+            item.title.toLowerCase().includes(query) 
+        );
+
+        renderTable(filtered);
     });
 }
 //save ordinance

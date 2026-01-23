@@ -24,7 +24,8 @@ async function loadLive() {
             headers: authHeaders()
         });
         live = await res.json();
-        renderTable();
+        renderTable(live);
+        setupSearch();
     }catch(err){
         console.error("Failed to load live", err);
     }
@@ -45,8 +46,14 @@ closeModalBtns.forEach(btn =>{
 });
 
 //render table
-function renderTable(){
+function renderTable(live){
     liveTableBody.innerHTML = "";
+
+    if(!live.length){
+        liveTableBody.innerHTML = `<tr><td colspan="3">No live streams found.</td></tr>`;
+        return;
+    }
+
     live.forEach(item =>{
         liveTableBody.innerHTML += `
             <tr>
@@ -58,6 +65,18 @@ function renderTable(){
                 </td>
             </tr>
         `;
+    });
+}
+//search functionality
+function setupSearch(){
+    const searchInput = document.getElementById("searchLive");
+    searchInput.addEventListener("input", () =>{
+        const query = searchInput.value.toLowerCase();
+
+        const filtered = live.filter(item =>
+            item.title.toLowerCase().includes(query) 
+        );
+        renderTable(filtered);
     });
 }
 //save live

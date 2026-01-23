@@ -333,23 +333,25 @@ body {
 /*end design home*/
 /*start search design*/
 .search{
-    float: right;
+    float: left;
     display: flex;
     align-items: center;
-    background-color: #ffffff;
+    /*background-color: #ffffff;*/
+    background-color: #F9FAFB;
     padding: 6px 10px;
     border: none;
     margin-top: 8px;
     margin-right: 16px;
     border-radius: 25px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    margin-bottom: 10px;
 }
 .search input{
     border: none;
     outline: none;
     font-size: 16px;
     padding: 6px;
-    width: 250px;
+    width: 500px;
     background: transparent;
 }
 .search i{

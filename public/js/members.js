@@ -21,7 +21,8 @@ async function loadMembers() {
         headers: authHeaders()
     });
     members = await res.json();
-    renderTable();
+    renderTable(members);
+    setupSearch();
 }
 //modal controls
 
@@ -65,8 +66,13 @@ function formatBirthDate(dateString){
     }
 }
 //render members table
-function renderTable(){
+function renderTable(members){
     membersTableBody.innerHTML = "";
+
+    if (!members.length) {
+        membersTableBody.innerHTML = `<tr><td colspan="7">No members found.</td></tr>`;
+        return;
+    }
 
     members.forEach(item => {
         membersTableBody.innerHTML += `
@@ -83,6 +89,20 @@ function renderTable(){
                 </td>
             </tr>
         `;
+    });
+}
+//setup search
+function setupSearch(){
+    const searchInput = document.getElementById("searchMembers");
+
+    searchInput.addEventListener("input", () => {
+        const query = searchInput.value.toLowerCase().trim();
+
+        const filtered = members.filter(item =>
+            item.name.toLowerCase().includes(query) 
+        );
+
+        renderTable(filtered);
     });
 }
 //save
