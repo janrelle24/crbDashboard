@@ -36,6 +36,23 @@ openModalMembers.onclick = openMembersModal;
 closeModalBtns.forEach(btn => {
     btn.onclick = () => membersModal.classList.remove("show");
 });
+
+//helper: format birth date nicely (e.g. "January 23, 1998")
+function formatBirthDate(dateString){
+    if(!dateString) return "N/A";
+    try{
+        const date = new Date(dateString);
+        //check if the date is valid
+        if(isNaN(date)) return "Invalid Date";
+        return date.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+        });
+    }catch{
+        return dateString;
+    }
+}
 //render members table
 function renderTable(){
     membersTableBody.innerHTML = "";
@@ -46,7 +63,7 @@ function renderTable(){
                 <td><img src="${item.image}" alt="members image" style="width:80px; height:auto;"></td>
                 <td>${item.name}</td>
                 <td>${item.position}</td>
-                <td>${item.birthDate}</td>
+                <td>${formatBirthDate(item.birthDate)}</td>
                 <td>${item.education}</td>
                 <td>${item.achievements}</td>
                 <td>

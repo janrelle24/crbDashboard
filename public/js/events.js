@@ -59,6 +59,15 @@ document.addEventListener('DOMContentLoaded', function(){
             console.error("Failed to load events", err);
         } 
     }
+    //helper: format time nicely
+    function formatTime(time){
+        if (!time) return "N/A";
+        try {
+            return new Date(`1970-01-01T${time}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        } catch {
+            return time;
+        }
+    }
     //render table
     function renderTable(){
         eventsTableBody.innerHTML = "";
@@ -67,8 +76,8 @@ document.addEventListener('DOMContentLoaded', function(){
             eventsTableBody.innerHTML += `
                 <tr>
                     <td>${item.title}</td>
-                    <td>${item.date}</td>
-                    <td>${item.time}</td>
+                    <td>${new Date(item.date).toLocaleDateString()}</td>
+                    <td>${formatTime(item.time)}</td>
                     <td>${item.place}</td>
                     <td>${item.agenda}</td>
                     <td>
