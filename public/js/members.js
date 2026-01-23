@@ -44,11 +44,22 @@ function formatBirthDate(dateString){
         const date = new Date(dateString);
         //check if the date is valid
         if(isNaN(date)) return "Invalid Date";
-        return date.toLocaleDateString("en-US", {
+        //format the birth date
+        const formattedDate = date.toLocaleDateString("en-US", {
             year: "numeric",
             month: "long",
             day: "numeric"
         });
+        //calculate age
+        const today = new Date();
+        let age = today.getFullYear() - date.getFullYear();
+        const m = today.getMonth() - date.getMonth();
+
+        //adjust age if birthday hasn't occurred yet this year
+        if (m < 0 || (m === 0 && today.getDate() < date.getDate())) {
+            age--;
+        }
+        return `${formattedDate} (Age ${age})`;
     }catch{
         return dateString;
     }
