@@ -6,6 +6,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (params.get("openModal") === "true") {
         openOrdinanceModal();
     }
+    //pagination buttons
+    document.getElementById("prevBtn").addEventListener("click", prevPage);
+    document.getElementById("nextBtn").addEventListener("click", nextPage);
+    //search
+    document.getElementById("searchOrdinance").addEventListener("input", handleSearch);
 });
 
 const ordinanceModal = document.getElementById("ordinanceModal");
@@ -15,16 +20,20 @@ const ordinanceTableBody = document.getElementById("ordinanceTableBody");
 const ordinanceForm = document.getElementById("ordinanceForm");
 const modalTitle = document.getElementById("modalTitle");
 
-let ordinance = [];
+let allOrdinance = [];
+let filtered = [];
+let currentPage = 1;
+const ITEMS_PER_PAGE = 5;
 
 async function loadOrdinance() {
     try{
         const res = await fetch("/api/ordinance", {
             headers: authHeaders()
         });
-        ordinance = await res.json();
-        renderTable(ordinance);
-        setupSearch();
+        allOrdinance = await res.json();
+        filtered = allOrdinance;
+        renderTable();
+        updatePaginationButtons();
     }catch(err){
         console.error("Failed to load ordinance", err);
     }
@@ -43,14 +52,18 @@ closeModalBtns.forEach(btn =>{
     btn.onclick = () => ordinanceModal.classList.remove("show");
 });
 //render table
-function renderTable(ordinance){
+function renderTable(){
     ordinanceTableBody.innerHTML = "";
 
-    if(!ordinance.length){
+    if(!filtered.length){
         ordinanceTableBody.innerHTML = `<tr><td colspan="4">No ordinance found.</td></tr>`;
         return;
     }
-    ordinance.forEach(item =>{
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    const pageItems = filtered.slice(start, end);
+
+    pageItems.forEach(item =>{
         ordinanceTableBody.innerHTML += `
             <tr>
                 <td>${item.title}</td>
@@ -65,18 +78,41 @@ function renderTable(ordinance){
     });
 }
 //setup search
-function setupSearch(){
-    const searchInput = document.getElementById("searchOrdinance");
+function handleSearch(){
+    const query = document.getElementById("searchOrdinance").value.toLowerCase().trim();
 
-    searchInput.addEventListener("input", () => {
-        const query = searchInput.value.toLowerCase().trim();
+    filtered = allOrdinance.filter(item =>
+        item.title.toLowerCase().includes(query)
+    );
+    currentPage = 1;
+    renderTable();
+    updatePaginationButtons();
+}
+/* PAGINATION CONTROLS */
+function prevPage(){
+    if(currentPage > 1){
+        currentPage--;
+        renderTable();
+        updatePaginationButtons();
+    }
+}
+function nextPage(){
+    const maxPage = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+    if(currentPage < maxPage){
+        currentPage++;
+        renderTable();
+        updatePaginationButtons();
+    }
+}
+/* UPDATE BUTTONS + PAGE INDICATOR */
+function updatePaginationButtons(){
+    const maxPage = Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
 
-        const filtered = ordinance.filter(item =>
-            item.title.toLowerCase().includes(query) 
-        );
+    document.getElementById("prevBtn").disabled = currentPage === 1;
+    document.getElementById("nextBtn").disabled = currentPage === maxPage;
 
-        renderTable(filtered);
-    });
+    document.getElementById("pageIndicator").textContent =
+        `Page ${currentPage} of ${maxPage}`;
 }
 //save ordinance
 ordinanceForm.addEventListener("submit", async e =>{
@@ -108,7 +144,7 @@ ordinanceForm.addEventListener("reset", () =>{
 });
 //edit ordinance
 function editOrdinance(id) {
-    const item = ordinance.find(n => n._id === id);
+    const item = allOrdinance.find(n => n._id === id);
 
     document.getElementById("ordinanceId").value = item._id;
     document.getElementById("title").value = item.title;

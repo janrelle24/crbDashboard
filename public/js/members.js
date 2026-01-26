@@ -5,6 +5,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (params.get("openModal") === "true") {
         openMembersModal();
     }
+    //pagination buttons
+    document.getElementById("prevBtn").addEventListener("click", prevPage);
+    document.getElementById("nextBtn").addEventListener("click", nextPage);
+    //search
+    document.getElementById("searchMembers").addEventListener("input", handleSearch);
 });
 
 const membersModal = document.getElementById("membersModal");
@@ -14,15 +19,19 @@ const membersTableBody = document.getElementById("membersTableBody");
 const membersForm = document.getElementById("membersForm");
 const modalTitle = document.getElementById("modalTitle");
 
-let members = [];
+let allMembers = [];
+let filtered = [];
+let currentPage = 1;
+const ITEMS_PER_PAGE = 5;
 
 async function loadMembers() {
     const res = await fetch("/api/members", {
         headers: authHeaders()
     });
-    members = await res.json();
-    renderTable(members);
-    setupSearch();
+    allMembers = await res.json();
+    filtered = allMembers
+    renderTable();
+    updatePaginationButtons();
 }
 //modal controls
 
@@ -66,15 +75,18 @@ function formatBirthDate(dateString){
     }
 }
 //render members table
-function renderTable(members){
+function renderTable(){
     membersTableBody.innerHTML = "";
 
-    if (!members.length) {
+    if (!filtered.length) {
         membersTableBody.innerHTML = `<tr><td colspan="7">No members found.</td></tr>`;
         return;
     }
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    const pageItems = filtered.slice(start, end);
 
-    members.forEach(item => {
+    pageItems.forEach(item => {
         membersTableBody.innerHTML += `
             <tr>
                 <td><img src="${item.image}" alt="members image" style="width:80px; height:auto;"></td>
@@ -92,18 +104,42 @@ function renderTable(members){
     });
 }
 //setup search
-function setupSearch(){
-    const searchInput = document.getElementById("searchMembers");
+function handleSearch(){
+    const query = document.getElementById("searchMembers").value.toLowerCase().trim();
 
-    searchInput.addEventListener("input", () => {
-        const query = searchInput.value.toLowerCase().trim();
+    filtered = allMembers.filter(item =>
+        item.name.toLowerCase().includes(query)
+    );
+    currentPage = 1;
+    renderTable();
+    updatePaginationButtons();
+}
+/* PAGINATION CONTROLS */
+function prevPage(){
+    if(currentPage > 1){
+        currentPage--;
+        renderTable();
+        updatePaginationButtons();
+    }
+}
 
-        const filtered = members.filter(item =>
-            item.name.toLowerCase().includes(query) 
-        );
+function nextPage(){
+    const maxPage = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+    if(currentPage < maxPage){
+        currentPage++;
+        renderTable();
+        updatePaginationButtons();
+    }
+}
+/* UPDATE BUTTONS + PAGE INDICATOR */
+function updatePaginationButtons(){
+    const maxPage = Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
 
-        renderTable(filtered);
-    });
+    document.getElementById("prevBtn").disabled = currentPage === 1;
+    document.getElementById("nextBtn").disabled = currentPage === maxPage;
+
+    document.getElementById("pageIndicator").textContent =
+        `Page ${currentPage} of ${maxPage}`;
 }
 //save
 membersForm.addEventListener("submit", async e => {
@@ -150,7 +186,7 @@ membersForm.addEventListener("reset", () => {
 });
 // Edit 
 function editMembers(id) {
-    const item = members.find(n => n._id === id);
+    const item = allMembers.find(n => n._id === id);
 
     document.getElementById("membersId").value = item._id;
     document.getElementById("name").value = item.name;

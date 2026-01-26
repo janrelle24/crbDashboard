@@ -15,6 +15,12 @@ document.addEventListener('DOMContentLoaded', function(){
     const eventsForm = document.getElementById("eventsForm");
     const eventsModalTitle = document.getElementById("eventsModalTitle");
 
+    // PAGINATION + SEARCH ELEMENTS
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const pageIndicator = document.getElementById("pageIndicator");
+    const searchInput = document.getElementById("searchEvents");
+
     if (!monthYearEvents || !daysContainerEvents || !leftBtnEvents || !rightBtnEvents || !prevYearEvents || !nextYearEvents) {
         console.error("One or more required DOM elements are missing:", {
             monthYearEvents,
@@ -37,7 +43,11 @@ document.addEventListener('DOMContentLoaded', function(){
     let todayEvents = new Date();
 
     let events = [];
+    let filteredEvents = [];
     let eventDates = new Set();
+
+    let currentPage = 1;
+    const ITEMS_PER_PAGE = 5;
 
     async function loadEvents() {
         try{
@@ -45,6 +55,8 @@ document.addEventListener('DOMContentLoaded', function(){
                 headers: authHeaders()
             });
             events = await res.json();
+            filteredEvents = events;
+            currentPage = 1;
 
             //build set of event dates
             eventDates.clear();
@@ -52,9 +64,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 eventDates.add(formatDateKey(e.date));
             });
 
-
-            renderTable(events);
-            setupSearch();
+            renderTable();
             renderCalendarEvents(currentDateEvents); // re-render calendar
         }catch(err){
             console.error("Failed to load events", err);
@@ -70,15 +80,19 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     }
     //render table
-    function renderTable(events){
+    function renderTable(){
         eventsTableBody.innerHTML = "";
 
-        if(!events.length){
+        if(!filteredEvents.length){
             eventsTableBody.innerHTML = `<tr><td colspan="6">No events found.</td></tr>`;
+            updatePagination();
             return;
         }
+        const start = (currentPage - 1) * ITEMS_PER_PAGE;
+        const end = start + ITEMS_PER_PAGE;
+        const pageItems = filteredEvents.slice(start, end);
 
-        events.forEach(item => {
+        pageItems.forEach(item => {
             eventsTableBody.innerHTML += `
                 <tr>
                     <td>${item.title}</td>
@@ -93,7 +107,38 @@ document.addEventListener('DOMContentLoaded', function(){
                 </tr>
             `;
         });
+        updatePagination();
     }
+    function updatePagination() {
+        const maxPage = Math.ceil(filteredEvents.length / ITEMS_PER_PAGE) || 1;
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === maxPage;
+        pageIndicator.textContent = `Page ${currentPage} of ${maxPage}`;
+    }
+    prevBtn.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+        }
+    });
+
+    nextBtn.addEventListener("click", () => {
+        const maxPage = Math.ceil(filteredEvents.length / ITEMS_PER_PAGE);
+        if (currentPage < maxPage) {
+            currentPage++;
+            renderTable();
+        }
+    });
+    /* ===================== SEARCH ===================== */
+    searchInput.addEventListener("input", () => {
+        const query = searchInput.value.toLowerCase().trim();
+        filteredEvents = events.filter(e =>
+            e.title.toLowerCase().includes(query)
+        );
+        currentPage = 1;
+        renderTable();
+    });
+    /*
     //search functionality
     function setupSearch(){
         const searchInput = document.getElementById("searchEvents");
@@ -105,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function(){
             );
             renderTable(filtered);
         });
-    }
+    }*/
     //save events
     eventsForm.addEventListener("submit", async e=>{
         e.preventDefault();

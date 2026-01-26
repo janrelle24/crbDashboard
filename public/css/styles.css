@@ -886,5 +886,36 @@ body {
     transform: rotate(90deg);
 }
 /*end events modal design*/
-
+/*start prev and next*/
+.prev-and-next{
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin-top: 20px;
+}
+.pagination-btn{
+    background-color: #c1121f;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.pagination-btn:hover{
+    background-color: #8d0f17;
+    transform: scale(1.05);
+}
+.pagination-btn i{
+    margin-right: 5px;
+    margin-left: 5px;
+    font-size: 1.1rem;
+}
+.page-indicator{
+    font-weight: 600;
+    padding: 8px 16px;
+    color: #333;
+}
+/*end prev and next*/
 

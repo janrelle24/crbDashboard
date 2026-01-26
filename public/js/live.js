@@ -7,6 +7,11 @@ document.addEventListener("DOMContentLoaded", () => {
         openLiveModal();
         window.history.replaceState({}, document.title, window.location.pathname);
     }
+    //pagination buttons
+    document.getElementById("prevBtn").addEventListener("click", prevPage);
+    document.getElementById("nextBtn").addEventListener("click", nextPage);
+    //search
+    document.getElementById("searchLive").addEventListener("input", handleSearch);
 });
 
 const liveModal = document.getElementById("liveModal");
@@ -16,16 +21,20 @@ const liveTableBody = document.getElementById("liveTableBody");
 const liveForm = document.getElementById("liveForm");
 const modalTitle = document.getElementById("modalLiveTitle");
 
-let live = [];
+let allLive = [];
+let filtered = [];
+let currentPage = 1;
+const ITEMS_PER_PAGE = 5;
 
 async function loadLive() {
     try{
         const res = await fetch("/api/live", {
             headers: authHeaders()
         });
-        live = await res.json();
-        renderTable(live);
-        setupSearch();
+        allLive = await res.json();
+        filtered = allLive;
+        renderTable();
+        updatePaginationButtons();
     }catch(err){
         console.error("Failed to load live", err);
     }
@@ -46,15 +55,18 @@ closeModalBtns.forEach(btn =>{
 });
 
 //render table
-function renderTable(live){
+function renderTable(){
     liveTableBody.innerHTML = "";
 
-    if(!live.length){
+    if(!filtered.length){
         liveTableBody.innerHTML = `<tr><td colspan="3">No live streams found.</td></tr>`;
         return;
     }
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    const pageItems = filtered.slice(start, end);
 
-    live.forEach(item =>{
+    pageItems.forEach(item =>{
         liveTableBody.innerHTML += `
             <tr>
                 <td>${item.title}</td>
@@ -68,16 +80,40 @@ function renderTable(live){
     });
 }
 //search functionality
-function setupSearch(){
-    const searchInput = document.getElementById("searchLive");
-    searchInput.addEventListener("input", () =>{
-        const query = searchInput.value.toLowerCase();
+function handleSearch(){
+    const query = document.getElementById("searchLive").value.toLowerCase().trim();
+    filtered = allLive.filter(item =>
+        item.title.toLowerCase().includes(query)
+    );
+    currentPage = 1;
+    renderTable();
+    updatePaginationButtons();
+}
+/* PAGINATION CONTROLS */
+function prevPage(){
+    if(currentPage > 1){
+        currentPage--;
+        renderTable();
+        updatePaginationButtons();
+    }
+}
+function nextPage(){
+    const maxPage = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+    if(currentPage < maxPage){
+        currentPage++;
+        renderTable();
+        updatePaginationButtons();
+    }
+}
+/* UPDATE BUTTONS + PAGE INDICATOR */
+function updatePaginationButtons(){
+    const maxPage = Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
 
-        const filtered = live.filter(item =>
-            item.title.toLowerCase().includes(query) 
-        );
-        renderTable(filtered);
-    });
+    document.getElementById("prevBtn").disabled = currentPage === 1;
+    document.getElementById("nextBtn").disabled = currentPage === maxPage;
+
+    document.getElementById("pageIndicator").textContent =
+        `Page ${currentPage} of ${maxPage}`;
 }
 //save live
 liveForm.addEventListener("submit", async e =>{
@@ -110,7 +146,7 @@ liveForm.addEventListener("reset", () =>{
 });
 //edit live
 function editLive(id) {
-    const item = live.find(n => n._id === id);
+    const item = allLive.find(n => n._id === id);
 
     document.getElementById("liveId").value = item._id;
     document.getElementById("title").value = item.title;

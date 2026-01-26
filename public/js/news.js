@@ -6,6 +6,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (params.get("openModal") === "true") {
         openNewsModal();
     }
+    //pagination buttons
+    document.getElementById("prevBtn").addEventListener("click", prevPage);
+    document.getElementById("nextBtn").addEventListener("click", nextPage);
+
+     // search
+    document.getElementById("searchNews").addEventListener("input", handleSearch);
 });
 
 const modal = document.getElementById("newsModal");
@@ -15,16 +21,21 @@ const tableBody = document.getElementById("newsTableBody");
 const form = document.getElementById("newsForm");
 const modalTitle = document.getElementById("modalTitle");
 
-let news = [];
+let allNews = [];
+let filtered = [];
+let currentPage = 1;
+const ITEMS_PER_PAGE = 5;
 
 async function loadNews() {
     const res = await fetch("/api/news", {
         headers: authHeaders()
     });
         
-    news = await res.json();
-    renderTable(news);
-    setupSearch();
+    allNews = await res.json();
+    filtered = allNews;
+    currentPage = 1;
+    renderTable();
+    updatePaginationButtons();
 }
 
 /* Modal controls */
@@ -42,16 +53,19 @@ closeModalBtns.forEach(btn => {
     btn.onclick = () => modal.classList.remove("show");
 });
 
-/* Render table */
-function renderTable(news){
+/* Render table (WITH PAGINATION) */
+function renderTable(){
     tableBody.innerHTML = "";
 
-    if (!news.length) {
+    if (!filtered.length) {
         tableBody.innerHTML = `<tr><td colspan="5">No news found.</td></tr>`;
         return;
     }
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    const pageItems = filtered.slice(start, end);
 
-    news.forEach(item => {
+    pageItems.forEach(item => {
         tableBody.innerHTML += `
             <tr>
                 <td><img src="${item.image}" alt="news image" style="width:80px; height:auto;"></td>
@@ -67,18 +81,43 @@ function renderTable(news){
     });
 }
 /* Search functionality */
-function setupSearch(){
-    const searchInput = document.getElementById("searchNews");
+function handleSearch(){
+    //const searchInput = document.getElementById("searchNews");
+    const query = document.getElementById("searchNews").value.toLowerCase().trim();
 
-    searchInput.addEventListener("input", () => {
-        const query = searchInput.value.toLowerCase().trim();
+    filtered = allNews.filter(item =>
+        item.title.toLowerCase().includes(query)
+    );
+    currentPage = 1;
+    renderTable();
+    updatePaginationButtons();
+}
+/* PAGINATION CONTROLS */
+function prevPage(){
+    if(currentPage > 1){
+        currentPage--;
+        renderTable();
+        updatePaginationButtons();
+    }
+}
 
-        const filtered = news.filter(item =>
-            item.title.toLowerCase().includes(query) 
-        );
+function nextPage(){
+    const maxPage = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+    if(currentPage < maxPage){
+        currentPage++;
+        renderTable();
+        updatePaginationButtons();
+    }
+}
+/* UPDATE BUTTONS + PAGE INDICATOR */
+function updatePaginationButtons(){
+    const maxPage = Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
 
-        renderTable(filtered);
-    });
+    document.getElementById("prevBtn").disabled = currentPage === 1;
+    document.getElementById("nextBtn").disabled = currentPage === maxPage;
+
+    document.getElementById("pageIndicator").textContent =
+        `Page ${currentPage} of ${maxPage}`;
 }
 /* Save */
 form.addEventListener("submit", async e => {
@@ -120,7 +159,7 @@ form.addEventListener("reset", () => {
 });
 /* Edit */
 function editNews(id) {
-    const item = news.find(n => n._id === id);
+    const item = allNews.find(n => n._id === id);
 
     document.getElementById("newsId").value = item._id;
     document.getElementById("title").value = item.title;
