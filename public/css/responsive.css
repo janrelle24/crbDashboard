@@ -57,6 +57,12 @@
         left: 10px;
         z-index: 1100;
     }
+    .main-pages h2{
+        font-size: 15px;
+    }
+    .main-header h2{
+        font-size: 15px;
+    }
 
     .main-table {
         background: transparent;
@@ -183,12 +189,47 @@
         margin-top: 20px;
         padding-top: 12px;
     }
+    .prev-and-next {
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .pagination-btn {
+        width: 100%;
+        max-width: 280px;
+        padding: 10px;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+
+    .page-indicator {
+        font-size: 0.85rem;
+        padding: 6px 10px;
+    }
+    .search {
+        width: 100%;
+        margin: 12px auto;
+        padding: 6px 10px;
+        border-radius: 20px;
+    }
+
+    .search input {
+        font-size: 14px;
+        padding: 6px 4px;
+    }
+
+    .search i {
+        font-size: 16px;
+    }
 }
 
 
-  /* (Mobile Landscape / Small Tablet ≤ 767px)  */
-@media (max-width: 767px) {
-
+  /* (Mobile Landscape / Small Tablet ≤ 768px)  */
+@media (max-width: 768px) {
+    .main-pages h2{
+        font-size: 22px;
+    }
     /* Stack everything vertically */
     .stats {
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -229,6 +270,33 @@
     .search input {
         width: 150px;
     }
+    .prev-and-next {
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .pagination-btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+
+    .pagination-btn i {
+        font-size: 1rem;
+    }
+
+    .page-indicator {
+        font-size: 0.9rem;
+    }
+    .search {
+        margin: 10px auto;
+        padding: 3px 5px;
+        border-radius: 10px;
+    }
+
+    .search input {
+        width: 100%;
+        font-size: 15px;
+    }
 }
 
 /*Medium (Tablet Portrait / Small Laptop ≤ 1024px)*/
@@ -262,6 +330,28 @@
     .days-events div {
         height: 60px;
         font-size: 13px;
+    }
+    .prev-and-next {
+        gap: 30px;
+    }
+
+    .pagination-btn {
+        padding: 9px 18px;
+        font-size: 0.95rem;
+    }
+
+    .page-indicator {
+        padding: 6px 14px;
+        font-size: 0.95rem;
+    }
+    .search {
+        margin-top: 20px;
+        padding: 6px 12px;
+    }
+
+    .search input {
+        width: 380px;
+        font-size: 15px;
     }
 }
 
