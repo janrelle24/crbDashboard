@@ -35,11 +35,15 @@ exports.login = async (req, res) => {
     if (!match)
         return res.status(400).json({ message: "Invalid credentials" });
 
+    const jwtSecret = process.env.JWT_SECRET || "RENDER_FALLBACK_SECRET_CHANGE_LATER";
+
     const token = jwt.sign(
         { id: user._id, username: user.username },
-        process.env.JWT_SECRET,
+        jwtSecret,
         { expiresIn: "1d" }
     );
 
     res.json({ token });
 };
+
+
