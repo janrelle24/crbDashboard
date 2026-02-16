@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: crbDashboard
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: JWT_SECRET
+        value: supersecretkey123
