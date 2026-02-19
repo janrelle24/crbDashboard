@@ -36,11 +36,11 @@ async function loadDashboardCounts(){
             ordinanceRes,
             membersRes
         ] = await Promise.all([
-            fetch("/api/news/count", { headers: authHeaders() }),
-            fetch("/api/events/count", { headers: authHeaders() }),
-            fetch("/api/live/count", { headers: authHeaders() }),
-            fetch("/api/ordinance/count", { headers: authHeaders() }),
-            fetch("/api/members/count", { headers: authHeaders() })
+            authFetch("/api/news/count"),
+            authFetch("/api/events/count"),
+            authFetch("/api/live/count"),
+            authFetch("/api/ordinance/count"),
+            authFetch("/api/members/count")
         ]);
 
         if (!newsRes.ok || !eventsRes.ok || !liveRes.ok || !ordinanceRes.ok || !membersRes.ok) {
@@ -84,7 +84,7 @@ async function loadRecentActivity() {
     list.innerHTML = "<li>Loading...</li>";
 
     try {
-        const res = await fetch("/api/recent-activity", { headers: authHeaders() });
+        const res = await authFetch("/api/recent-activity");
 
         if(!res.ok){
             throw new Error("Unauthorized or failed to load recent activity");
@@ -93,7 +93,7 @@ async function loadRecentActivity() {
 
         list.innerHTML = ""; // Clear loading
 
-        if (!activities.length) {
+        if (!Array.isArray(activities) || activities.length === 0) {
             list.innerHTML = "<li>No recent activity</li>";
             return;
         }

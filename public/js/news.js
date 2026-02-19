@@ -21,21 +21,34 @@ const tableBody = document.getElementById("newsTableBody");
 const form = document.getElementById("newsForm");
 const modalTitle = document.getElementById("modalTitle");
 
+if (!tableBody || !form) {
+    console.warn("News page elements not found. Script stopped.");
+    return;
+}
+
 let allNews = [];
 let filtered = [];
 let currentPage = 1;
 const ITEMS_PER_PAGE = 5;
 
 async function loadNews() {
-    const res = await fetch("/api/news", {
-        headers: authHeaders()
-    });
+    try{
+        const res = await authFetch("/api/news");
         
-    allNews = await res.json();
-    filtered = allNews;
-    currentPage = 1;
-    renderTable();
-    updatePaginationButtons();
+        const data = await res.json();
+        if (!Array.isArray(data)) {
+            throw new Error("Invalid news data");
+        }
+        allNews = data;
+        filtered = data;
+        currentPage = 1;
+        renderTable();
+        updatePaginationButtons();
+    }catch(err){
+        console.error("Failed to load news:", err.message);
+        tableBody.innerHTML = `<tr><td colspan="5">Failed to load news</td></tr>`;
+    }
+    
 }
 
 /* Modal controls */
@@ -47,7 +60,7 @@ function openNewsModal() {
 }
 
 /* BUTTON CLICK */
-openModalBtn.onclick = openNewsModal;
+openModalBtn?.addEventListener("click", openNewsModal);
 
 closeModalBtns.forEach(btn => {
     btn.onclick = () => modal.classList.remove("show");
@@ -136,20 +149,16 @@ form.addEventListener("submit", async e => {
     // Only append image if user selected one
     if (image) formData.append("image", image);
 
-    const method = id ? "PUT" : "POST";
-    const url = id ? `/api/news/${id}` : "/api/news";
     try{
-        await fetch(url, {
-            method, 
-            headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+        await authFetch(id ? `/api/news/${id}` : "/api/news", {
+            method: id ? "PUT" : "POST",
             body: formData
         });
-    
         modal.classList.remove("show");
         form.reset();
         loadNews();
     }catch(err){
-        console.error("Failed to save news:", err);
+        console.error("Failed to save news:", err.message);
     }
     
 });
@@ -160,6 +169,7 @@ form.addEventListener("reset", () => {
 /* Edit */
 function editNews(id) {
     const item = allNews.find(n => n._id === id);
+    if(!item) return;
 
     document.getElementById("newsId").value = item._id;
     document.getElementById("title").value = item.title;
@@ -172,12 +182,13 @@ function editNews(id) {
 async function deleteNews(id) {
     if (!confirm("Delete this news?")) return;
 
-    await fetch(`/api/news/${id}`, {
-        method: "DELETE",
-        headers: authHeaders()
-    });
+    try{
+        await authFetch(`/api/news/${id}`, { method: "DELETE"});
+        loadNews();
+    }catch(err){
+        console.error("Failed to delete news:", err.message);
+    }
     
-    loadNews();
 }
 /*end script for news page modal*/
 

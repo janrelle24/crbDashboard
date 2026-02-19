@@ -1,3 +1,4 @@
+(() => {
 /*start script for members page */
 document.addEventListener("DOMContentLoaded", () => {
     loadMembers();
@@ -19,19 +20,34 @@ const membersTableBody = document.getElementById("membersTableBody");
 const membersForm = document.getElementById("membersForm");
 const modalTitle = document.getElementById("modalTitle");
 
+if (!membersTableBody || !membersForm){
+    console.warn("Members page elements not found. Script stopped.");
+    return;
+}
+
 let allMembers = [];
 let filtered = [];
 let currentPage = 1;
 const ITEMS_PER_PAGE = 5;
 
 async function loadMembers() {
-    const res = await fetch("/api/members", {
-        headers: authHeaders()
-    });
-    allMembers = await res.json();
-    filtered = allMembers
-    renderTable();
-    updatePaginationButtons();
+    try{
+        const res = await authFetch("/api/members");
+
+        const data = await res.json();
+        if (!Array.isArray(data)) {
+            throw new Error("Invalid members data");
+        }
+        allMembers = data;
+        filtered = data;
+        currentPage = 1;
+        renderTable();
+        updatePaginationButtons();
+    }catch(err){
+        console.error("Failed to load members:", err);
+        membersTableBody.innerHTML = `<tr><td colspan="7">Failed to load members</td></tr>`;
+    }
+    
 }
 //modal controls
 
@@ -41,7 +57,7 @@ function openMembersModal() {
     modalTitle.textContent = "add Members";
     membersModal.classList.add("show");
 }
-openModalMembers.onclick = openMembersModal;
+openModalMembers?.addEventListener("click", openMembersModal);
 
 closeModalBtns.forEach(btn => {
     btn.onclick = () => membersModal.classList.remove("show");
@@ -163,12 +179,9 @@ membersForm.addEventListener("submit", async e => {
     // Only append image if user selected one
     if (image) formData.append("image", image);
 
-    const method = id ? "PUT" : "POST";
-    const url = id ? `/api/members/${id}` : "/api/members";
     try{
-        await fetch(url, {
-            method,
-            headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+        await authFetch(id ? `/api/members/${id}` : "/api/members", {
+            method: id ? "PUT" : "POST",
             body: formData
         });
     
@@ -176,7 +189,7 @@ membersForm.addEventListener("submit", async e => {
         membersForm.reset();
         loadMembers();
     }catch(err){
-        console.error("Failed to save members:", err);
+        console.error("Failed to save members:", err.message);
     }
     
 });
@@ -187,6 +200,7 @@ membersForm.addEventListener("reset", () => {
 // Edit 
 function editMembers(id) {
     const item = allMembers.find(n => n._id === id);
+    if(!item) return;   
 
     document.getElementById("membersId").value = item._id;
     document.getElementById("name").value = item.name;
@@ -201,12 +215,19 @@ function editMembers(id) {
 // Delete 
 async function deleteMembers(id) {
     if (!confirm("Delete this members?")) return;
-
-    await fetch(`/api/members/${id}`, {
-        method: "DELETE",
-        headers: authHeaders()
-    });
+    try{
+        await authFetch(`/api/members/${id}`, { method: "DELETE"});
     
-    loadMembers();
+        loadMembers();
+    }catch(err){
+        console.error("Failed to delete members:", err.message);
+    }
+    
 }
 /*end script for members page */
+
+/* expose for inline buttons */
+window.editMembers = editMembers;
+window.deleteMembers = deleteMembers;
+
+})();

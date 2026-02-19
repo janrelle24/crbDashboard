@@ -1,3 +1,4 @@
+(() => {
 /*start script for ordinance page*/
 document.addEventListener("DOMContentLoaded", () => {
     loadOrdinance();
@@ -20,6 +21,11 @@ const ordinanceTableBody = document.getElementById("ordinanceTableBody");
 const ordinanceForm = document.getElementById("ordinanceForm");
 const modalTitle = document.getElementById("modalTitle");
 
+if(!ordinanceTableBody || !ordinanceForm){
+    console.warn("Ordinance page elements not found. Script stopped.");
+    return;
+}
+
 let allOrdinance = [];
 let filtered = [];
 let currentPage = 1;
@@ -27,15 +33,20 @@ const ITEMS_PER_PAGE = 5;
 
 async function loadOrdinance() {
     try{
-        const res = await fetch("/api/ordinance", {
-            headers: authHeaders()
-        });
-        allOrdinance = await res.json();
-        filtered = allOrdinance;
+        const res = await authFetch("/api/ordinance");
+
+        const data = await res.json();
+        if(!Array.isArray(data)){
+            throw new Error("Invalid ordinance data");
+        }
+        allOrdinance = data;
+        filtered = data;
+        currentPage = 1;
         renderTable();
         updatePaginationButtons();
     }catch(err){
         console.error("Failed to load ordinance", err);
+        ordinanceTableBody.innerHTML = `<tr><td colspan="4">Failed to load ordinance</td></tr>`;
     }
 }
 
@@ -46,7 +57,8 @@ function openOrdinanceModal(){
     modalTitle.textContent = "Create";
     ordinanceModal.classList.add("show");
 }
-openModalOrdinance.onclick = openOrdinanceModal;
+
+openModalOrdinance?.addEventListener("click", openOrdinanceModal);
 
 closeModalBtns.forEach(btn =>{
     btn.onclick = () => ordinanceModal.classList.remove("show");
@@ -122,14 +134,15 @@ ordinanceForm.addEventListener("submit", async e =>{
     const title = document.getElementById("title").value;
     const content = document.getElementById("content").value;
 
-    const method = id ? "PUT" : "POST";
-    const url = id ? `/api/ordinance/${id}` : "/api/ordinance";
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("content", content);
+
 
     try{
-        await fetch(url, {
-            method,
-            headers: authHeaders({ "Content-Type": "application/json" }),
-            body: JSON.stringify({ title, content })
+        await authFetch(id ? `/api/ordinance/${id}` : "/api/ordinance", {
+            method: id ? "PUT" : "POST",
+            body: formData,
         });
         ordinanceModal.classList.remove("show");
         ordinanceForm.reset();
@@ -145,6 +158,7 @@ ordinanceForm.addEventListener("reset", () =>{
 //edit ordinance
 function editOrdinance(id) {
     const item = allOrdinance.find(n => n._id === id);
+    if(!item) return;
 
     document.getElementById("ordinanceId").value = item._id;
     document.getElementById("title").value = item.title;
@@ -157,13 +171,16 @@ function editOrdinance(id) {
 async function deleteOrdinance(id) {
     if (!confirm("Delete this ordinance?")) return;
 
-    await fetch(`/api/ordinance/${id}`, {
-        method: "DELETE",
-        headers: authHeaders()
-    });
+    try{
+        await authFetch(`/api/ordinance/${id}`, { method: "DELETE"});
+        loadOrdinance();
+    }catch(err){
+        console.error("Failed to delete ordinance:", err.message);
+    }
     
-    loadOrdinance();
 }
 /*end script for ordinance page*/
 window.editOrdinance = editOrdinance;
 window.deleteOrdinance = deleteOrdinance;
+
+})();

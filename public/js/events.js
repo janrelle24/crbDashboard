@@ -51,10 +51,13 @@ document.addEventListener('DOMContentLoaded', function(){
 
     async function loadEvents() {
         try{
-            const res = await fetch("/api/events", {
-                headers: authHeaders()
-            });
-            events = await res.json();
+            const res = await authFetch("/api/events");
+
+            const data = await res.json();
+            if (!Array.isArray(data)) {
+                throw new Error("Invalid events data");
+            }
+            events = data;
             filteredEvents = events;
             currentPage = 1;
 
@@ -67,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function(){
             renderTable();
             renderCalendarEvents(currentDateEvents); // re-render calendar
         }catch(err){
-            console.error("Failed to load events", err);
+            console.error("Failed to load events", err.message);
         } 
     }
     //helper: format time nicely
@@ -138,19 +141,7 @@ document.addEventListener('DOMContentLoaded', function(){
         currentPage = 1;
         renderTable();
     });
-    /*
-    //search functionality
-    function setupSearch(){
-        const searchInput = document.getElementById("searchEvents");
-
-        searchInput.addEventListener("input", () =>{
-            const query = searchInput.value.toLowerCase().trim();
-            const filtered = events.filter(item =>
-                item.title.toLowerCase().includes(query)
-            );
-            renderTable(filtered);
-        });
-    }*/
+    
     //save events
     eventsForm.addEventListener("submit", async e=>{
         e.preventDefault();
@@ -162,21 +153,24 @@ document.addEventListener('DOMContentLoaded', function(){
         const place = document.getElementById("eventsPlace").value;
         const agenda = document.getElementById("agenda").value;
 
-
-        const method = id ? "PUT" : "POST";
-        const url = id ? `/api/events/${id}` : "/api/events";
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("date", date);
+        formData.append("time", time);
+        formData.append("place", place);
+        formData.append("agenda", agenda);
+        
 
         try{
-            await fetch(url, {
-                method,
-                headers: authHeaders({ "Content-Type": "application/json" }),
-                body: JSON.stringify({ title, date, time, place, agenda })
+            await authFetch(id ? `/api/events/${id}` : "/api/events", {
+                method: id ? "PUT" : "POST",
+                body: formData
             });
             eventsModal.classList.remove("show");
             eventsForm.reset();
             loadEvents();
         }catch(err){
-            console.error("Failed to save event:", err);
+            console.error("Failed to save event:", err.message);
         }
         
     });
@@ -202,13 +196,15 @@ document.addEventListener('DOMContentLoaded', function(){
     //delete events
     async function deleteEvents(id) {
         if (!confirm("Delete this events?")) return;
-    
-        await fetch(`/api/events/${id}`, {
-            method: "DELETE",
-            headers: authHeaders()
-        });
         
-        loadEvents();
+        try{
+            await authFetch(`/api/events/${id}`, { method: "DELETE"});
+            
+            loadEvents();
+        }catch(err){
+            console.error("Failed to delete event:", err.message);
+        }
+        
     }
     //render calendar
     function renderCalendarEvents(date){

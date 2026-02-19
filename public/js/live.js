@@ -1,3 +1,4 @@
+(() => {
 /*start script for live page */
 document.addEventListener("DOMContentLoaded", () => {
     loadLive();
@@ -21,6 +22,11 @@ const liveTableBody = document.getElementById("liveTableBody");
 const liveForm = document.getElementById("liveForm");
 const modalTitle = document.getElementById("modalLiveTitle");
 
+if (!liveTableBody || !liveForm) {
+    console.warn("Live page elements not found. Script stopped.");
+    return;
+}
+
 let allLive = [];
 let filtered = [];
 let currentPage = 1;
@@ -28,15 +34,20 @@ const ITEMS_PER_PAGE = 5;
 
 async function loadLive() {
     try{
-        const res = await fetch("/api/live", {
-            headers: authHeaders()
-        });
-        allLive = await res.json();
-        filtered = allLive;
+        const res = await authFetch("/api/live");
+
+        const data = await res.json();
+        if(!Array.isArray(data)){
+            throw new Error("Invalid live data");
+        }
+        allLive = data;
+        filtered = data;
+        currentPage = 1;
         renderTable();
         updatePaginationButtons();
     }catch(err){
         console.error("Failed to load live", err);
+        liveTableBody.innerHTML = `<tr><td colspan="5">Failed to load Live</td></tr>`;
     }
 }
 //modal controls
@@ -48,7 +59,8 @@ function openLiveModal(){
 }
 
 
-openModalLive.onclick = openLiveModal;
+openModalLive?.addEventListener("click", openLiveModal);
+
 
 closeModalBtns.forEach(btn =>{
     btn.onclick = () => liveModal.classList.remove("show");
@@ -124,14 +136,15 @@ liveForm.addEventListener("submit", async e =>{
     const embedUrl = document.getElementById("embedUrl").value;
     const status = document.getElementById("status").value;
 
-    const method = id ? "PUT" : "POST";
-    const url = id ? `/api/live/${id}` : "/api/live";
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("embedUrl", embedUrl);
+    formData.append("status", status);
 
     try{
-        await fetch(url, {
-            method,
-            headers: authHeaders({ "Content-Type": "application/json" }),
-            body: JSON.stringify({ title, embedUrl, status })
+        await authFetch(id ? `/api/live/${id}` : "/api/live", {
+            method: id ? "PUT" : "POST",
+            body: formData,
         });
         liveModal.classList.remove("show");
         liveForm.reset();
@@ -147,6 +160,7 @@ liveForm.addEventListener("reset", () =>{
 //edit live
 function editLive(id) {
     const item = allLive.find(n => n._id === id);
+    if(!item) return;
 
     document.getElementById("liveId").value = item._id;
     document.getElementById("title").value = item.title;
@@ -159,14 +173,16 @@ function editLive(id) {
 //delete live
 async function deleteLive(id) {
     if (!confirm("Delete this live?")) return;
-
-    await fetch(`/api/live/${id}`, {
-        method: "DELETE",
-        headers: authHeaders()
-    });
+    try{
+        await authFetch(`/api/live/${id}`, { method: "DELETE"});
+        loadLive();
+    }catch(err){
+        console.error("Failed to delete live:", err.message);
+    }
     
-    loadLive();
 }
 /*end script for live page */
 window.editLive = editLive;
 window.deleteLive = deleteLive;
+
+})();
