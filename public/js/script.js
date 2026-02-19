@@ -11,12 +11,6 @@ function initSidebar() {
         btn.addEventListener("click", () => {
             sidebar.classList.toggle("closed");
             
-            /*
-            if (sidebar.classList.contains("closed")) {
-                hamburger.style.display = "block";
-            } else {
-                hamburger.style.display = "none";
-            }*/
             hamburger.style.display = sidebar.classList.contains("closed")
                 ? "block"
                 : "none";

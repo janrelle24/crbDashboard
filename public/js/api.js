@@ -1,27 +1,21 @@
-async function authFetch(url, options = {}){
+async function authFetch(url, options = {}) {
     const token = localStorage.getItem("token");
 
-    // If no token, stop early
-    if (!token) {
-        window.location.href = "login.html";
-        throw new Error("No auth token found. Please login.");
+    const headers = {
+        ...(options.headers || {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+    };
+
+    //DO NOT force Content-Type (breaks FormData)
+    if (!(options.body instanceof FormData)) {
+        headers["Content-Type"] = "application/json";
     }
 
     const res = await fetch(url, {
         ...options,
-        headers: {
-            ...(options.headers || {}),
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-        }
+        headers
     });
 
-    if (res.status === 401 || res.status === 403) {
-        localStorage.removeItem("token");
-        window.location.href = "login.html";
-        throw new Error("Session expired");
-    }
-    
+    // Let CALLER decide what to do
     return res;
-
 }
