@@ -1,3 +1,4 @@
+(() => {
 /* start script for events */
 document.addEventListener('DOMContentLoaded', function(){
     console.log("DOMContentLoaded event fired");
@@ -322,3 +323,4 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* end script for events */
+})();

@@ -1,3 +1,5 @@
+
+(() => {
 /*start script for news page modal*/
 document.addEventListener("DOMContentLoaded", () => {
     loadNews();
@@ -191,4 +193,6 @@ async function deleteNews(id) {
     
 }
 /*end script for news page modal*/
+
+})();
 

@@ -28,6 +28,18 @@ function initSidebar() {
 document.addEventListener("DOMContentLoaded", loadDashboardCounts);
 
 async function loadDashboardCounts(){
+    const newsCount = document.getElementById("newsCount");
+    const eventsCount = document.getElementById("eventsCount");
+    const liveCount = document.getElementById("liveCount");
+    const ordinanceCount = document.getElementById("ordinanceCount");
+    const membersCount = document.getElementById("membersCount");
+
+    // Not dashboard page → stop safely
+    if (!newsCount && !eventsCount && !liveCount && !ordinanceCount && !membersCount) {
+        console.warn("Dashboard counters not found. Skipping loadDashboardCounts.");
+        return;
+    }
+
     try{
         const [
             newsRes,
@@ -43,9 +55,8 @@ async function loadDashboardCounts(){
             authFetch("/api/members/count")
         ]);
 
-        if (!newsRes.ok || !eventsRes.ok || !liveRes.ok || !ordinanceRes.ok || !membersRes.ok) {
-            console.error("One or more count requests failed.");
-            return;
+        if (![newsRes, eventsRes, liveRes, ordinanceRes, membersRes].every(r => r.ok)) {
+            throw new Error("One or more count requests failed");
         }
 
         const news = await newsRes.json();
@@ -54,11 +65,11 @@ async function loadDashboardCounts(){
         const ordinance = await ordinanceRes.json();
         const members = await membersRes.json();
 
-        document.getElementById("newsCount").textContent = news.count ?? 0;
-        document.getElementById("eventsCount").textContent = events.count ?? 0;
-        document.getElementById("liveCount").textContent = live.count ?? 0;
-        document.getElementById("ordinanceCount").textContent = ordinance.count ?? 0;
-        document.getElementById("membersCount").textContent = members.count ?? 0;
+        if (newsCount) newsCount.textContent = news.count ?? 0;
+        if (eventsCount) eventsCount.textContent = events.count ?? 0;
+        if (liveCount) liveCount.textContent = live.count ?? 0;
+        if (ordinanceCount) ordinanceCount.textContent = ordinance.count ?? 0;
+        if (membersCount) membersCount.textContent = members.count ?? 0;
 
     }catch(err){
         console.error("Failed to load dashboard counts", err);
@@ -67,13 +78,17 @@ async function loadDashboardCounts(){
 /*end dashboard counts */
 /**start redirect to pages */
 document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".quick-actions button").forEach(button => {
+    const buttons = document.querySelectorAll(".quick-actions button");
+    if (!buttons.length) return;
+
+    buttons.forEach(button => {
         button.addEventListener("click", () => {
             const page = button.dataset.page;
             window.location.href = `${page}.html?openModal=true`;
         });
     });
 });
+
 
 /**end redirect to pages */
 /**recent activities */
