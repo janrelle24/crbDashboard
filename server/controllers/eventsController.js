@@ -4,7 +4,11 @@ const Events = require("../model/events");
 exports.createEvent = async (req, res) => {
     try {
         const event = await Events.create({
-        ...req.body,
+        title: req.body.title,
+        date: req.body.date,
+        time: req.body.time,
+        place: req.body.place,
+        agenda: req.body.agenda,
         createdBy: req.user.id
         });
 

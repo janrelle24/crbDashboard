@@ -4,7 +4,8 @@ const Ordinance = require("../model/ordinance");
 exports.createOrdinance = async (req, res) => {
     try {
         const ordinance = await Ordinance.create({
-        ...req.body,
+        title: req.body.title,
+        content: req.body.content,
         createdBy: req.user.id
         });
 

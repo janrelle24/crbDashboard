@@ -4,7 +4,9 @@ const Live = require("../model/live");
 exports.createLive = async (req, res) => {
     try {
         const live = await Live.create({
-        ...req.body,
+        title: req.body.title,
+        embedUrl: req.body.embedUrl,
+        status: req.body.status || "OFFLINE",
         createdBy: req.user.id
         });
 
