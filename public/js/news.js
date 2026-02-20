@@ -193,6 +193,8 @@ async function deleteNews(id) {
     
 }
 /*end script for news page modal*/
+window.editNews = editNews;
+window.deleteNews = deleteNews;
 
 })();
 
