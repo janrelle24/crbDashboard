@@ -154,18 +154,16 @@ document.addEventListener('DOMContentLoaded', function(){
         const place = document.getElementById("eventsPlace").value;
         const agenda = document.getElementById("agenda").value;
 
-        const formData = new FormData();
-        formData.append("title", title);
-        formData.append("date", date);
-        formData.append("time", time);
-        formData.append("place", place);
-        formData.append("agenda", agenda);
-        
-
         try{
             await authFetch(id ? `/api/events/${id}` : "/api/events", {
                 method: id ? "PUT" : "POST",
-                body: formData
+                body: JSON.stringify({
+                    title,
+                    date,
+                    time,
+                    place,
+                    agenda
+                })
             });
             eventsModal.classList.remove("show");
             eventsForm.reset();

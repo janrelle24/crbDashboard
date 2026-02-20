@@ -134,21 +134,20 @@ ordinanceForm.addEventListener("submit", async e =>{
     const title = document.getElementById("title").value;
     const content = document.getElementById("content").value;
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("content", content);
-
-
+    
     try{
         await authFetch(id ? `/api/ordinance/${id}` : "/api/ordinance", {
             method: id ? "PUT" : "POST",
-            body: formData,
+            body: JSON.stringify({
+                title,
+                content
+            })
         });
         ordinanceModal.classList.remove("show");
         ordinanceForm.reset();
         loadOrdinance();
     }catch(err){
-        console.error("Failed to save ordinance:", err);
+        console.error("Failed to save ordinance:", err.message);
     }
 });
 //cancel ordinance

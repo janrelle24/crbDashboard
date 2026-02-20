@@ -136,21 +136,21 @@ liveForm.addEventListener("submit", async e =>{
     const embedUrl = document.getElementById("embedUrl").value;
     const status = document.getElementById("status").value;
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("embedUrl", embedUrl);
-    formData.append("status", status);
-
+    
     try{
         await authFetch(id ? `/api/live/${id}` : "/api/live", {
             method: id ? "PUT" : "POST",
-            body: formData,
+            body: JSON.stringify({
+                title,
+                embedUrl,
+                status
+            })
         });
         liveModal.classList.remove("show");
         liveForm.reset();
         loadLive();
     }catch(err){
-        console.error("Failed to save live:", err);
+        console.error("Failed to save live:", err.message);
     }
 });
 //cancel live
