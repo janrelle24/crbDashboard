@@ -2,7 +2,7 @@ const router = require("express").Router();
 
 const newsController = require("../controllers/newsController");
 const { auth } = require("../middlewares/authMiddleware");
-const { upload } = require("../middlewares/uploadMiddleware");
+const { upload } = require("../middlewares/upload");
 
 /* Protected News Routes */
 router.post("/", auth, upload.single("image"), newsController.createNews);

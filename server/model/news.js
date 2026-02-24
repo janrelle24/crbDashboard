@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const NewsSchema = mongoose.Schema({
-    image: { type: String, required: true },
+    image: { type: String, required: true, default: process.env.CLOUDINARY_URL },
     title: { type: String, required: true },
     content: { type: String, required: true },
     date: { type: Date, default: Date.now },

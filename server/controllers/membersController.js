@@ -4,7 +4,7 @@ const Members = require("../model/members");
 exports.createMember = async (req, res) => {
     try {
         const member = await Members.create({
-        image: req.file ? `/uploads/${req.file.filename}` : "",
+        image: req.file ? req.file.path : process.env.CLOUDINARY_URL,
         name: req.body.name,
         position: req.body.position,
         birthDate: req.body.birthDate,

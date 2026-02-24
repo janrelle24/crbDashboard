@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const membersController = require("../controllers/membersController");
 const { auth } = require("../middlewares/authMiddleware");
-const { upload } = require("../middlewares/uploadMiddleware");
+const { upload } = require("../middlewares/upload");
 
 router.post("/", auth, upload.single("image"), membersController.createMember);
 

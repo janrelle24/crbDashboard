@@ -4,7 +4,7 @@ const News = require("../model/news");
 exports.createNews = async (req, res) => {
     try {
         const news = await News.create({
-        image: req.file ? `/uploads/${req.file.filename}` : "",
+        image: req.file ? req.file.path : process.env.CLOUDINARY_URL,
         title: req.body.title,
         content: req.body.content,
         createdBy: req.user.id

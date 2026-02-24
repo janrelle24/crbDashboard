@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const MembersSchema = mongoose.Schema({
     image: { type: String, required: true },
-    name: { type: String, required: true },
+    name: { type: String, required: true, default: process.env.CLOUDINARY_URL },
     position: { type: String, required: true },
     birthDate: { type: Date, required: true},
     education: { type: String, required: true },
